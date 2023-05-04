@@ -13,6 +13,7 @@ import (
 type consulConfig struct {
 	Address   *string `cty:"address"`
 	Namespace *string `cty:"namespace"`
+	Partition *string `cty:"partition"`
 	Token     *string `cty:"token"`
 }
 
@@ -21,6 +22,9 @@ var ConfigSchema = map[string]*schema.Attribute{
 		Type: schema.TypeString,
 	},
 	"namespace": {
+		Type: schema.TypeString,
+	},
+	"partition": {
 		Type: schema.TypeString,
 	},
 	"token": {
@@ -41,11 +45,18 @@ func GetConfig(connection *plugin.Connection) consulConfig {
 }
 
 func getClient(ctx context.Context, d *plugin.QueryData) (*api.Client, error) {
+	// Load connection from cache
+	cacheKey := "consul"
+	if cachedData, ok := d.ConnectionManager.Cache.Get(cacheKey); ok {
+		return cachedData.(*api.Client), nil
+	}
+
 	consulConfig := GetConfig(d.Connection)
 
 	address := os.Getenv("CONSUL_HTTP_ADDR")
 	namespace := os.Getenv("CONSUL_NAMESPACE")
 	token := os.Getenv("CONSUL_HTTP_TOKEN")
+	partition := os.Getenv("CONSUL_PARTITION")
 
 	if consulConfig.Address != nil {
 		address = *consulConfig.Address
@@ -56,13 +67,20 @@ func getClient(ctx context.Context, d *plugin.QueryData) (*api.Client, error) {
 	if consulConfig.Namespace != nil {
 		namespace = *consulConfig.Namespace
 	}
+	if consulConfig.Partition != nil {
+		partition = *consulConfig.Partition
+	}
 
 	if address != "" {
 		con := api.DefaultConfig()
 		con.Address = address
 		con.Token = token
 		con.Namespace = namespace
+		con.Partition = partition
 		client, _ := api.NewClient(con)
+
+		// Save to cache
+		d.ConnectionManager.Cache.Set(cacheKey, client)
 		return client, nil
 	}
 

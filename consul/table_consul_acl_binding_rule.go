@@ -9,12 +9,13 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
-func tableNomadACLBindingRule(ctx context.Context) *plugin.Table {
+func tableConsulACLBindingRule(ctx context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "nomad_acl_binding_rule",
+		Name:        "consul_acl_binding_rule",
 		Description: "Retrieve information about your ACL binding rules.",
 		List: &plugin.ListConfig{
-			Hydrate: listACLBindingRules,
+			ParentHydrate: listACLAuthMethods,
+			Hydrate:       listACLBindingRules,
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.SingleColumn("id"),
@@ -41,31 +42,16 @@ func tableNomadACLBindingRule(ctx context.Context) *plugin.Table {
 				Name:        "selector",
 				Type:        proto.ColumnType_STRING,
 				Description: "An expression that matches against verified identity attributes returned from the auth method during login.",
-				Hydrate:     getACLBindingRule,
 			},
 			{
 				Name:        "bind_type",
 				Type:        proto.ColumnType_STRING,
 				Description: "The binding type of the ACL binding rule.",
-				Hydrate:     getACLBindingRule,
 			},
 			{
 				Name:        "bind_name",
 				Type:        proto.ColumnType_STRING,
 				Description: "The binding name of the ACL binding rule.",
-				Hydrate:     getACLBindingRule,
-			},
-			{
-				Name:        "create_time",
-				Type:        proto.ColumnType_TIMESTAMP,
-				Description: "Create time of the ACL binding rule.",
-				Hydrate:     getACLBindingRule,
-			},
-			{
-				Name:        "modify_time",
-				Type:        proto.ColumnType_TIMESTAMP,
-				Description: "Last modify time of the ACL binding rule.",
-				Hydrate:     getACLBindingRule,
 			},
 			{
 				Name:        "create_index",
@@ -76,6 +62,16 @@ func tableNomadACLBindingRule(ctx context.Context) *plugin.Table {
 				Name:        "modify_index",
 				Type:        proto.ColumnType_INT,
 				Description: "Modify index of the ACL binding rule.",
+			},
+			{
+				Name:        "namespace",
+				Type:        proto.ColumnType_STRING,
+				Description: "Namespace is the namespace the ACL binding rule is associated with.",
+			},
+			{
+				Name:        "partition",
+				Type:        proto.ColumnType_STRING,
+				Description: "Partition is the partition the ACL binding rule is associated with.",
 			},
 
 			/// Steampipe standard columns
@@ -89,42 +85,31 @@ func tableNomadACLBindingRule(ctx context.Context) *plugin.Table {
 	}
 }
 
-func listACLBindingRules(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func listACLBindingRules(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	method := h.Item.(*api.ACLAuthMethodListEntry)
+
 	client, err := getClient(ctx, d)
 	if err != nil {
-		plugin.Logger(ctx).Error("nomad_acl_binding_rule.listACLBindingRules", "connection_error", err)
+		plugin.Logger(ctx).Error("consul_acl_binding_rule.listACLBindingRules", "connection_error", err)
 		return nil, err
 	}
 
-	maxLimit := int64(1000)
-	if d.QueryContext.Limit != nil {
-		if *d.QueryContext.Limit < maxLimit {
-			maxLimit = *d.QueryContext.Limit
-		}
-	}
-
 	input := &api.QueryOptions{
-		PerPage: int32(maxLimit),
+		//PerPage: int32(maxLimit),
 	}
 
-	for {
-		bindingRules, metadata, err := client.ACLBindingRules().List(input)
-		if err != nil {
-			plugin.Logger(ctx).Error("nomad_acl_binding_rule.listACLBindingRules", "api_error", err)
-			return nil, err
-		}
+	bindingRules, _, err := client.ACL().BindingRuleList(method.Name, input)
+	if err != nil {
+		plugin.Logger(ctx).Error("consul_acl_binding_rule.listACLBindingRules", "api_error", err)
+		return nil, err
+	}
 
-		for _, bindingRule := range bindingRules {
-			d.StreamListItem(ctx, bindingRule)
+	for _, bindingRule := range bindingRules {
+		d.StreamListItem(ctx, bindingRule)
 
-			// Context can be cancelled due to manual cancellation or the limit has been hit
-			if d.RowsRemaining(ctx) == 0 {
-				return nil, nil
-			}
-		}
-		input.NextToken = metadata.NextToken
-		if input.NextToken == "" {
-			break
+		// Context can be cancelled due to manual cancellation or the limit has been hit
+		if d.RowsRemaining(ctx) == 0 {
+			return nil, nil
 		}
 	}
 
@@ -133,12 +118,7 @@ func listACLBindingRules(ctx context.Context, d *plugin.QueryData, _ *plugin.Hyd
 
 func getACLBindingRule(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
-	var id string
-	if h.Item != nil {
-		id = h.Item.(*api.ACLBindingRuleListStub).ID
-	} else {
-		id = d.EqualsQualString("id")
-	}
+	id := d.EqualsQualString("id")
 
 	// check if id is empty
 	if id == "" {
@@ -148,13 +128,13 @@ func getACLBindingRule(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 	// Create client
 	client, err := getClient(ctx, d)
 	if err != nil {
-		logger.Error("nomad_acl_binding_rule.getACLBindingRule", "connection_error", err)
+		logger.Error("consul_acl_binding_rule.getACLBindingRule", "connection_error", err)
 		return nil, err
 	}
 
-	bindingRule, _, err := client.ACLBindingRules().Get(id, &api.QueryOptions{})
+	bindingRule, _, err := client.ACL().BindingRuleRead(id, &api.QueryOptions{})
 	if err != nil {
-		logger.Error("nomad_acl_binding_rule.getACLBindingRule", "api_error", err)
+		logger.Error("consul_acl_binding_rule.getACLBindingRule", "api_error", err)
 		return nil, err
 	}
 

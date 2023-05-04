@@ -9,9 +9,9 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
-func tableNomadACLRole(ctx context.Context) *plugin.Table {
+func tableConsulACLRole(ctx context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "nomad_acl_role",
+		Name:        "consul_acl_role",
 		Description: "Retrieve information about your ACL roles.",
 		List: &plugin.ListConfig{
 			Hydrate: listACLRoles,
@@ -38,6 +38,16 @@ func tableNomadACLRole(ctx context.Context) *plugin.Table {
 				Description: "A human-readable, operator set description that can provide additional context about the ACL role.",
 			},
 			{
+				Name:        "namespace",
+				Type:        proto.ColumnType_STRING,
+				Description: "Namespace is the namespace the ACL role is associated with.",
+			},
+			{
+				Name:        "partition",
+				Type:        proto.ColumnType_STRING,
+				Description: "Partition is the partition the ACL role is associated with.",
+			},
+			{
 				Name:        "create_index",
 				Type:        proto.ColumnType_INT,
 				Description: "The index when the ACL role was created.",
@@ -51,6 +61,21 @@ func tableNomadACLRole(ctx context.Context) *plugin.Table {
 				Name:        "policies",
 				Type:        proto.ColumnType_JSON,
 				Description: "An array of ACL policy links.",
+			},
+			{
+				Name:        "service_identities",
+				Type:        proto.ColumnType_JSON,
+				Description: "Service identities attached to the acl role.",
+			},
+			{
+				Name:        "node_identities",
+				Type:        proto.ColumnType_JSON,
+				Description: "Node identities attached to the acl role.",
+			},
+			{
+				Name:        "hash",
+				Type:        proto.ColumnType_JSON,
+				Description: "The hash of the acl role.",
 			},
 
 			/// Steampipe standard columns
@@ -67,53 +92,36 @@ func tableNomadACLRole(ctx context.Context) *plugin.Table {
 func listACLRoles(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	client, err := getClient(ctx, d)
 	if err != nil {
-		plugin.Logger(ctx).Error("nomad_acl_role.listACLRoles", "connection_error", err)
+		plugin.Logger(ctx).Error("consul_acl_role.listACLRoles", "connection_error", err)
 		return nil, err
 	}
 
-	maxLimit := int64(1000)
-	if d.QueryContext.Limit != nil {
-		if *d.QueryContext.Limit < maxLimit {
-			maxLimit = *d.QueryContext.Limit
-		}
-	}
-
 	input := &api.QueryOptions{
-		PerPage: int32(maxLimit),
+		//PerPage: int32(maxLimit),
 	}
 
-	for {
-		roles, metadata, err := client.ACLRoles().List(input)
-		if err != nil {
-			plugin.Logger(ctx).Error("nomad_acl_role.listACLRoles", "api_error", err)
-			return nil, err
-		}
+	roles, _, err := client.ACL().RoleList(input)
+	if err != nil {
+		plugin.Logger(ctx).Error("consul_acl_role.listACLRoles", "api_error", err)
+		return nil, err
+	}
 
-		for _, role := range roles {
-			d.StreamListItem(ctx, role)
+	for _, role := range roles {
+		d.StreamListItem(ctx, role)
 
-			// Context can be cancelled due to manual cancellation or the limit has been hit
-			if d.RowsRemaining(ctx) == 0 {
-				return nil, nil
-			}
-		}
-		input.NextToken = metadata.NextToken
-		if input.NextToken == "" {
-			break
+		// Context can be cancelled due to manual cancellation or the limit has been hit
+		if d.RowsRemaining(ctx) == 0 {
+			return nil, nil
 		}
 	}
 
 	return nil, nil
 }
 
-func getACLRole(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func getACLRole(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
-	var id string
-	if h.Item != nil {
-		id = h.Item.(*api.ACLRoleListStub).ID
-	} else {
-		id = d.EqualsQualString("id")
-	}
+
+	id := d.EqualsQualString("id")
 
 	// check if id is empty
 	if id == "" {
@@ -123,13 +131,13 @@ func getACLRole(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData)
 	// Create client
 	client, err := getClient(ctx, d)
 	if err != nil {
-		logger.Error("nomad_acl_role.getACLRole", "connection_error", err)
+		logger.Error("consul_acl_role.getACLRole", "connection_error", err)
 		return nil, err
 	}
 
-	role, _, err := client.ACLRoles().Get(id, &api.QueryOptions{})
+	role, _, err := client.ACL().RoleRead(id, &api.QueryOptions{})
 	if err != nil {
-		logger.Error("nomad_acl_role.getACLRole", "api_error", err)
+		logger.Error("consul_acl_role.getACLRole", "api_error", err)
 		return nil, err
 	}
 

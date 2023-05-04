@@ -9,18 +9,24 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
-func tableNomadACLPolicy(ctx context.Context) *plugin.Table {
+func tableConsulACLPolicy(ctx context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "nomad_acl_policy",
+		Name:        "consul_acl_policy",
 		Description: "Retrieve information about your ACL policies.",
 		List: &plugin.ListConfig{
 			Hydrate: listACLPolicies,
 		},
 		Get: &plugin.GetConfig{
-			KeyColumns: plugin.SingleColumn("name"),
+			KeyColumns: plugin.SingleColumn("id"),
 			Hydrate:    getACLPolicy,
 		},
 		Columns: []*plugin.Column{
+			{
+				Name:        "id",
+				Type:        proto.ColumnType_STRING,
+				Description: "The id of the acl policy.",
+				Transform:   transform.FromField("ID"),
+			},
 			{
 				Name:        "name",
 				Type:        proto.ColumnType_STRING,
@@ -38,6 +44,16 @@ func tableNomadACLPolicy(ctx context.Context) *plugin.Table {
 				Hydrate:     getACLPolicy,
 			},
 			{
+				Name:        "namespace",
+				Type:        proto.ColumnType_STRING,
+				Description: "Namespace is the namespace the ACL policy is associated with.",
+			},
+			{
+				Name:        "partition",
+				Type:        proto.ColumnType_STRING,
+				Description: "Partition is the partition the ACL policy is associated with.",
+			},
+			{
 				Name:        "create_index",
 				Type:        proto.ColumnType_INT,
 				Description: "The index when the acl policy was created.",
@@ -48,11 +64,14 @@ func tableNomadACLPolicy(ctx context.Context) *plugin.Table {
 				Description: "The index when the acl policy was last modified.",
 			},
 			{
-				Name:        "job_acl",
+				Name:        "datacenters",
 				Type:        proto.ColumnType_JSON,
-				Description: "The capabilities of the acl policy.",
-				Transform:   transform.FromField("JobACL"),
-				Hydrate:     getACLPolicy,
+				Description: "The datacenters of the acl policy.",
+			},
+			{
+				Name:        "hash",
+				Type:        proto.ColumnType_JSON,
+				Description: "The hash of the acl policy.",
 			},
 
 			/// Steampipe standard columns
@@ -69,39 +88,26 @@ func tableNomadACLPolicy(ctx context.Context) *plugin.Table {
 func listACLPolicies(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	client, err := getClient(ctx, d)
 	if err != nil {
-		plugin.Logger(ctx).Error("nomad_acl_policy.listACLPolicies", "connection_error", err)
+		plugin.Logger(ctx).Error("consul_acl_policy.listACLPolicies", "connection_error", err)
 		return nil, err
 	}
 
-	maxLimit := int64(1000)
-	if d.QueryContext.Limit != nil {
-		if *d.QueryContext.Limit < maxLimit {
-			maxLimit = *d.QueryContext.Limit
-		}
-	}
-
 	input := &api.QueryOptions{
-		PerPage: int32(maxLimit),
+		//PerPage: int32(maxLimit),
 	}
 
-	for {
-		policies, metadata, err := client.ACLPolicies().List(input)
-		if err != nil {
-			plugin.Logger(ctx).Error("nomad_acl_policy.listACLPolicies", "api_error", err)
-			return nil, err
-		}
+	policies, _, err := client.ACL().PolicyList(input)
+	if err != nil {
+		plugin.Logger(ctx).Error("consul_acl_policy.listACLPolicies", "api_error", err)
+		return nil, err
+	}
 
-		for _, policy := range policies {
-			d.StreamListItem(ctx, policy)
+	for _, policy := range policies {
+		d.StreamListItem(ctx, policy)
 
-			// Context can be cancelled due to manual cancellation or the limit has been hit
-			if d.RowsRemaining(ctx) == 0 {
-				return nil, nil
-			}
-		}
-		input.NextToken = metadata.NextToken
-		if input.NextToken == "" {
-			break
+		// Context can be cancelled due to manual cancellation or the limit has been hit
+		if d.RowsRemaining(ctx) == 0 {
+			return nil, nil
 		}
 	}
 
@@ -110,28 +116,28 @@ func listACLPolicies(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydrate
 
 func getACLPolicy(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
-	var name string
+	var id string
 	if h.Item != nil {
-		name = h.Item.(*api.ACLPolicyListStub).Name
+		id = h.Item.(*api.ACLPolicyListEntry).ID
 	} else {
-		name = d.EqualsQualString("name")
+		id = d.EqualsQualString("id")
 	}
 
-	// check if name is empty
-	if name == "" {
+	// check if id is empty
+	if id == "" {
 		return nil, nil
 	}
 
 	// Create client
 	client, err := getClient(ctx, d)
 	if err != nil {
-		logger.Error("nomad_acl_policy.getACLPolicy", "connection_error", err)
+		logger.Error("consul_acl_policy.getACLPolicy", "connection_error", err)
 		return nil, err
 	}
 
-	policy, _, err := client.ACLPolicies().Info(name, &api.QueryOptions{})
+	policy, _, err := client.ACL().PolicyRead(id, &api.QueryOptions{})
 	if err != nil {
-		logger.Error("nomad_acl_policy.getACLPolicy", "api_error", err)
+		logger.Error("consul_acl_policy.getACLPolicy", "api_error", err)
 		return nil, err
 	}
 

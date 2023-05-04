@@ -2,8 +2,8 @@ connection "consul" {
   plugin = "consul"
 
   # `address` - The address of the Consul server.
-  # Can also be set with the NOMAD_ADDR environment variable.
-  # address = "http://18.118.164.168:4646"
+  # Can also be set with the CONSUL_HTTP_ADDR environment variable.
+  # address = "http://52.14.112.248:8500"
 
   # `namespace` - The Consul cluster namespace.
   # For more information on the Namespace, please see https://developer.hashicorp.com/consul/tutorials/manage-clusters/namespaces.
