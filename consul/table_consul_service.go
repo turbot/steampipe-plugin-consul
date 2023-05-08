@@ -15,6 +15,24 @@ func tableConsulService(ctx context.Context) *plugin.Table {
 		Description: "Retrieve information about your services.",
 		List: &plugin.ListConfig{
 			Hydrate: listServices,
+			KeyColumns: []*plugin.KeyColumn{
+				{
+					Name:    "namespace",
+					Require: plugin.Optional,
+				},
+				{
+					Name:    "node",
+					Require: plugin.Optional,
+				},
+				{
+					Name:    "service_id",
+					Require: plugin.Optional,
+				},
+				{
+					Name:    "service_name",
+					Require: plugin.Optional,
+				},
+			},
 		},
 		Columns: []*plugin.Column{
 			{
@@ -144,8 +162,21 @@ func listServices(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateDat
 		return nil, err
 	}
 
-	input := &api.QueryOptions{
-		//	PerPage: int32(maxLimit),
+	input := &api.QueryOptions{}
+	if d.EqualsQuals["namespace"] != nil {
+		input.Namespace = d.EqualsQualString("namespace")
+	}
+	if d.EqualsQuals["service_id"] != nil {
+		filter := "ServiceID==" + d.EqualsQualString("service_id")
+		input.Filter = filter
+	}
+	if d.EqualsQuals["service_name"] != nil {
+		filter := "ServiceName==" + d.EqualsQualString("service_name")
+		input.Filter = filter
+	}
+	if d.EqualsQuals["node"] != nil {
+		filter := "Node==" + d.EqualsQualString("node")
+		input.Filter = filter
 	}
 
 	serviceTags, _, err := client.Catalog().Services(input)

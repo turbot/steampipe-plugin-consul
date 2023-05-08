@@ -36,7 +36,7 @@ where
   namespace = 'default';
 ```
 
-### List role type binding rules
+### List service type binding rules
 
 ```sql
 select
@@ -50,7 +50,7 @@ select
 from
   consul_acl_binding_rule
 where
-  bind_type = 'role';
+  bind_type = 'service';
 ```
 
 ### Show auth methods related to the binding rule

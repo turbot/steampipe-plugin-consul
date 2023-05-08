@@ -15,6 +15,12 @@ func tableConsulACLRole(ctx context.Context) *plugin.Table {
 		Description: "Retrieve information about your ACL roles.",
 		List: &plugin.ListConfig{
 			Hydrate: listACLRoles,
+			KeyColumns: []*plugin.KeyColumn{
+				{
+					Name:    "namespace",
+					Require: plugin.Optional,
+				},
+			},
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.SingleColumn("id"),
@@ -96,8 +102,9 @@ func listACLRoles(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateDat
 		return nil, err
 	}
 
-	input := &api.QueryOptions{
-		//PerPage: int32(maxLimit),
+	input := &api.QueryOptions{}
+	if d.EqualsQuals["namespace"] != nil {
+		input.Namespace = d.EqualsQualString("namespace")
 	}
 
 	roles, _, err := client.ACL().RoleList(input)

@@ -91,11 +91,7 @@ func listNodes(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) 
 		return nil, err
 	}
 
-	input := &api.QueryOptions{
-		//	PerPage: int32(maxLimit),
-	}
-
-	nodes, _, err := client.Catalog().Nodes(input)
+	nodes, _, err := client.Catalog().Nodes(&api.QueryOptions{})
 	if err != nil {
 		plugin.Logger(ctx).Error("consul_node.listNodes", "api_error", err)
 		return nil, err
@@ -117,6 +113,11 @@ func getNode(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (i
 	logger := plugin.Logger(ctx)
 
 	node := d.EqualsQualString("node")
+
+	// check if node is empty
+	if node == "" {
+		return nil, nil
+	}
 
 	// Create client
 	client, err := getClient(ctx, d)

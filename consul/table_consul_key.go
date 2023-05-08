@@ -15,6 +15,12 @@ func tableConsulKey(ctx context.Context) *plugin.Table {
 		Description: "Retrieve information about your keys.",
 		List: &plugin.ListConfig{
 			Hydrate: listKeys,
+			KeyColumns: []*plugin.KeyColumn{
+				{
+					Name:    "namespace",
+					Require: plugin.Optional,
+				},
+			},
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.SingleColumn("key"),
@@ -85,8 +91,9 @@ func listKeys(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (
 		return nil, err
 	}
 
-	input := &api.QueryOptions{
-		//	PerPage: int32(maxLimit),
+	input := &api.QueryOptions{}
+	if d.EqualsQuals["namespace"] != nil {
+		input.Namespace = d.EqualsQualString("namespace")
 	}
 
 	keys, _, err := client.KV().List("", input)
@@ -111,6 +118,11 @@ func getKey(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (in
 	logger := plugin.Logger(ctx)
 
 	keyName := d.EqualsQualString("key")
+
+	// check if keyName is empty
+	if keyName == "" {
+		return nil, nil
+	}
 
 	// Create client
 	client, err := getClient(ctx, d)

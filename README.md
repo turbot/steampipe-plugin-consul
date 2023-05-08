@@ -2,7 +2,7 @@
 
 # Consul Plugin for Steampipe
 
-Use SQL to query nodes, jobs, deployments and more from Consul.
+Use SQL to query nodes, acls, services and more from Consul.
 
 - **[Get started →](https://hub.steampipe.io/plugins/turbot/consul)**
 - Documentation: [Table definitions & examples](https://hub.steampipe.io/plugins/turbot/consul/tables)
@@ -23,40 +23,54 @@ Configure your [credentials](https://hub.steampipe.io/plugins/turbot/consul#cred
 
 Configure your account details in `~/.steampipe/config/consul.spc`:
 
-You may specify the Address and Namespace to authenticate:
+You may specify the Address to authenticate:
 
 - `address`: The address of the consul server.
-- `namespace`: The Consul Cluster namespace.
 
 ```hcl
 connection "consul" {
-  plugin    = "consul"
-  address   = "http://18.118.144.168:4646"
-  namespace = "*"
+  plugin  = "consul"
+  address = "http://52.14.112.248:8500"
 }
 ```
 
-or you may specify the Address, Namespace and SecretID to authenticate:
+or you may specify the Address and Token to authenticate:
 
 - `address`: The address of the consul server.
-- `namespace`: The Consul Cluster namespace.
-- `secret_id`: The SecretID of an ACL token.
+- `token`: The ACL token.
+
+```hcl
+connection "consul" {
+  plugin  = "consul"
+  address = "http://52.14.112.248:8500"
+  token   = "c178b810-8b18-6f38-016f-725ddec5d58"
+}
+```
+
+or if you are using consul enterprise then you may specify the Address, Token, namespace and partition to authenticate:
+
+- `address`: The address of the consul server.
+- `token`: The ACL token.
+- `namespace`: The consul namespace.
+- `partition`: The consul partition.
 
 ```hcl
 connection "consul" {
   plugin    = "consul"
-  address   = "http://18.118.144.168:4646"
-  namespace = "*"
-  secret_id = "c178b810-8b18-6f38-016f-725ddec5d58"
+  address   = "http://52.14.112.248:8500"
+  token     = "c178b810-8b18-6f38-016f-725ddec5d58"
+  namespace = '*'
+  partition = 'default'
 }
 ```
 
 or through environment variables
 
 ```sh
-export NOMAD_ADDR="http://18.118.144.168:4646"
-export NOMAD_NAMESPACE="*"
-export NOMAD_TOKEN="c178b810-8b18-6f38-016f-725ddec5d58"
+export CONSUL_HTTP_ADDR="http://18.118.144.168:4646"
+export CONSUL_NAMESPACE="*"
+export CONSUL_HTTP_TOKEN="c178b810-8b18-6f38-016f-725ddec5d58"
+export CONSUL_PARTITION="default"
 ```
 
 Run steampipe:
@@ -65,27 +79,26 @@ Run steampipe:
 steampipe query
 ```
 
-List your Consul jobs:
+List your Consul services:
 
 ```sql
 select
-  id,
-  name,
-  status,
-  dispatched,
-  namespace,
-  priority,
-  region
+  service_id,
+  service_name
+  node,
+  address,
+  datacenter,
+  namespace
 from
-  nomad_job;
+  consul_service;
 ```
 
 ```
-+------+------+---------+------------+-----------+----------+--------+
-| id   | name | status  | dispatched | namespace | priority | region |
-+------+------+---------+------------+-----------+----------+--------+
-| docs | docs | pending | false      | default   | 50       | global |
-+------+------+---------+------------+-----------+----------+--------+
++------------+--------+---------------+---------------------------------+-----------+
+| service_id | node   | address       | datacenter                      | namespace |
++------------+--------+---------------+---------------------------------+-----------+
+| consul     | consul | 172.25.34.191 | consul-quickstart-1683117303883 | default   |
++------------+--------+---------------+---------------------------------+-----------+
 ```
 
 ## Developing

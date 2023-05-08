@@ -26,12 +26,11 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			"consul_acl_policy":       tableConsulACLPolicy(ctx),
 			"consul_acl_role":         tableConsulACLRole(ctx),
 			"consul_acl_token":        tableConsulACLToken(ctx),
-			"consul_service":          tableConsulService(ctx),
+			"consul_intention":        tableConsulIntention(ctx),
+			"consul_key":              tableConsulKey(ctx),
 			"consul_namespace":        tableConsulNamespace(ctx),
 			"consul_node":             tableConsulNode(ctx),
-			"consul_key":              tableConsulKey(ctx),
-			"consul_intention":        tableConsulIntention(ctx),
-			// "consul_volume":           tableConsulVolume(ctx),
+			"consul_service":          tableConsulService(ctx),
 		},
 	}
 	return p

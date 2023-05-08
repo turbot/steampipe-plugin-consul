@@ -2,41 +2,40 @@
 organization: Turbot
 category: ["software development"]
 icon_url: "/images/plugins/turbot/consul.svg"
-brand_color: "#00CA8E"
+brand_color: "#850101"
 display_name: "Consul"
 short_name: "consul"
-description: "Steampipe plugin to query nodes, jobs, deployments and more from Consul."
+description: "Steampipe plugin to query nodes, acls, services and more from Consul."
 og_description: "Query Consul with SQL! Open source CLI. No DB required."
 og_image: "/images/plugins/turbot/consul-social-graphic.png"
 ---
 
 # Consul + Steampipe
 
-[Consul](https://www.nomadproject.io/) is a simple and flexible scheduler and orchestrator for managing containers and non-containerized applications across on-prem and clouds at scale.
+[Consul](https://www.consul.io/) is a service networking solution to automate network configurations, discover services, and enable secure connectivity across any cloud or runtime.
 
 [Steampipe](https://steampipe.io) is an open source CLI to instantly query cloud APIs using SQL.
 
-List your Consul jobs:
+List your Consul services:
 
 ```sql
 select
-  id,
-  name,
-  status,
-  dispatched,
-  namespace,
-  priority,
-  region
+  service_id,
+  service_name
+  node,
+  address,
+  datacenter,
+  namespace
 from
-  nomad_job;
+  consul_service;
 ```
 
 ```
-+------+------+---------+------------+-----------+----------+--------+
-| id   | name | status  | dispatched | namespace | priority | region |
-+------+------+---------+------------+-----------+----------+--------+
-| docs | docs | pending | false      | default   | 50       | global |
-+------+------+---------+------------+-----------+----------+--------+
++------------+--------+---------------+---------------------------------+-----------+
+| service_id | node   | address       | datacenter                      | namespace |
++------------+--------+---------------+---------------------------------+-----------+
+| consul     | consul | 172.25.34.191 | consul-quickstart-1683117303883 | default   |
++------------+--------+---------------+---------------------------------+-----------+
 ```
 
 ## Documentation
@@ -55,12 +54,12 @@ steampipe plugin install consul
 
 ### Credentials
 
-| Item        | Description                                                                                                                                                                               |
-| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Credentials | Consul requires an Address and Namespace or Address, Namespace and [Secret ID](https://developer.hashicorp.com/consul/tutorials/access-control/access-control-tokens) for all requests.   |
-| Permissions | The permission scope of Secret IDs is set by the Admin at the creation time of the ACL tokens.                                                                                            |
-| Radius      | Each connection represents a single Consul Installation.                                                                                                                                  |
-| Resolution  | 1. Credentials explicitly set in a steampipe config file (`~/.steampipe/config/consul.spc`)<br />2. Credentials specified in environment variables, e.g., `NOMAD_ADDR` and `NOMAD_TOKEN`. |
+| Item        | Description                                                                                                                                                                                           |
+| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Credentials | Consul requires an Address or Address and [Token](https://developer.hashicorp.com/consul/docs/security/acl/acl-tokens) for all requests.                                                              |
+| Permissions | The permission scope of tokens is set by the Admin at the creation time of the ACL tokens.                                                                                                            |
+| Radius      | Each connection represents a single Consul Installation.                                                                                                                                              |
+| Resolution  | 1. Credentials explicitly set in a steampipe config file (`~/.steampipe/config/consul.spc`)<br />2. Credentials specified in environment variables, e.g., `CONSUL_HTTP_ADDR` and `CONSUL_HTTP_TOKEN`. |
 
 ### Configuration
 
@@ -72,62 +71,80 @@ Configure your account details in `~/.steampipe/config/consul.spc`:
 connection "consul" {
   plugin = "consul"
 
-  # `address` - The address of the Consul server.
-  # Can also be set with the NOMAD_ADDR environment variable.
-  # address = "http://18.118.164.168:4646"
+  # `address`(required) - The address of the Consul server.
+  # Can also be set with the CONSUL_HTTP_ADDR environment variable.
+  # address = "http://52.14.112.248:8500"
 
-  # `namespace` - The Consul cluster namespace.
-  # For more information on the Namespace, please see https://developer.hashicorp.com/consul/tutorials/manage-clusters/namespaces.
-  # Can also be set with the NOMAD_NAMESPACE environment variable.
+  # `token`(optional) - The ACL token. It is required for ACL-enabled Consul servers.
+  # For more information on the ACL Token, please see https://developer.hashicorp.com/consul/docs/security/acl/acl-tokens.
+  # Can also be set with the CONSUL_HTTP_TOKEN environment variable.
+  # token = "c178b810-8b18-6f38-016f-725ddec5d58"
+
+  # `namespace`(optional) - This feature requires HashiCorp Cloud Platform (HCP) or self-managed Consul Enterprise. This parameter is not required in case of non-Enterprise.
+  # API will execute with default namespace if this parameter is not set.
+  # Can also be set with the CONSUL_NAMESPACE environment variable.
   # "*" indicates all the namespaces available.
   namespace = "*"
 
-  # `secret_id` - The SecretID of an ACL token.
-  # The SecretID is required to make requests for ACL-enabled clusters.
-  # For more information on the ACL Token, please see https://developer.hashicorp.com/consul/tutorials/access-control/access-control-tokens.
-  # Can also be set with the NOMAD_TOKEN environment variable.
-  # secret_id = "c178b810-8b18-6f38-016f-725ddec5d58"
+  # `partition`(optional) - This feature requires HashiCorp Cloud Platform (HCP) or self-managed Consul Enterprise. This parameter is not required in case of non-Enterprise.
+  # API will execute with default partition if this parameter is not set.
+  # Can also be set with the CONSUL_PARTITION environment variable.
+  # partition = "default"
 }
 ```
 
 ## Configuring Consul Credentials
 
-You may specify the Address and Namespace to authenticate:
+You may specify the Address to authenticate:
 
 - `address`: The address of the consul server.
-- `namespace`: The Consul Cluster namespace.
 
 ```hcl
 connection "consul" {
-  plugin    = "consul"
-  address   = "http://18.118.144.168:4646"
-  namespace = "*"
+  plugin  = "consul"
+  address = "http://52.14.112.248:8500"
 }
 ```
 
-or you may specify the Address, Namespace and SecretID to authenticate:
+or you may specify the Address and Token to authenticate:
 
 - `address`: The address of the consul server.
-- `namespace`: The Consul Cluster namespace.
-- `secret_id`: The SecretID of an ACL token.
+- `token`: The ACL token.
+
+```hcl
+connection "consul" {
+  plugin  = "consul"
+  address = "http://52.14.112.248:8500"
+  token   = "c178b810-8b18-6f38-016f-725ddec5d58"
+}
+```
+
+or if you are using consul enterprise then you may specify the Address, Token, namespace and partition to authenticate:
+
+- `address`: The address of the consul server.
+- `token`: The ACL token.
+- `namespace`: The consul namespace.
+- `partition`: The consul partition.
 
 ```hcl
 connection "consul" {
   plugin    = "consul"
-  address   = "http://18.118.144.168:4646"
-  namespace = "*"
-  secret_id = "c178b810-8b18-6f38-016f-725ddec5d58"
+  address   = "http://52.14.112.248:8500"
+  token     = "c178b810-8b18-6f38-016f-725ddec5d58"
+  namespace = '*'
+  partition = 'default'
 }
 ```
 
 or through environment variables
 
-The Consul plugin will use the Consul environment variable to obtain credentials **only if the `address`,`namespace` and `secret_id` is not specified** in the connection:
+The Consul plugin will use the Consul environment variable to obtain credentials **only if the `address`,`token`, `namespace` and `partition` is not specified** in the connection:
 
 ```sh
-export NOMAD_ADDR="http://18.118.144.168:4646"
-export NOMAD_NAMESPACE="*"
-export NOMAD_TOKEN="c178b810-8b18-6f38-016f-725ddec5d58"
+export CONSUL_HTTP_ADDR="http://18.118.144.168:4646"
+export CONSUL_NAMESPACE="*"
+export CONSUL_HTTP_TOKEN="c178b810-8b18-6f38-016f-725ddec5d58"
+export CONSUL_PARTITION="default"
 ```
 
 ## Get involved

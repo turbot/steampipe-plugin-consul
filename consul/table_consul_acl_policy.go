@@ -15,6 +15,12 @@ func tableConsulACLPolicy(ctx context.Context) *plugin.Table {
 		Description: "Retrieve information about your ACL policies.",
 		List: &plugin.ListConfig{
 			Hydrate: listACLPolicies,
+			KeyColumns: []*plugin.KeyColumn{
+				{
+					Name:    "namespace",
+					Require: plugin.Optional,
+				},
+			},
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.SingleColumn("id"),
@@ -92,8 +98,9 @@ func listACLPolicies(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydrate
 		return nil, err
 	}
 
-	input := &api.QueryOptions{
-		//PerPage: int32(maxLimit),
+	input := &api.QueryOptions{}
+	if d.EqualsQuals["namespace"] != nil {
+		input.Namespace = d.EqualsQualString("namespace")
 	}
 
 	policies, _, err := client.ACL().PolicyList(input)

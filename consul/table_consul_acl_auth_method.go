@@ -15,6 +15,12 @@ func tableConsulACLAuthMethod(ctx context.Context) *plugin.Table {
 		Description: "Retrieve information about your ACL auth methods.",
 		List: &plugin.ListConfig{
 			Hydrate: listACLAuthMethods,
+			KeyColumns: []*plugin.KeyColumn{
+				{
+					Name:    "namespace",
+					Require: plugin.Optional,
+				},
+			},
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.SingleColumn("name"),
@@ -103,8 +109,9 @@ func listACLAuthMethods(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydr
 		return nil, err
 	}
 
-	input := &api.QueryOptions{
-		//	PerPage: int32(maxLimit),
+	input := &api.QueryOptions{}
+	if d.EqualsQuals["namespace"] != nil {
+		input.Namespace = d.EqualsQualString("namespace")
 	}
 
 	authMethods, _, err := client.ACL().AuthMethodList(input)

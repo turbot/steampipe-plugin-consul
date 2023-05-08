@@ -2,6 +2,7 @@ package consul
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/hashicorp/consul/api"
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
@@ -15,6 +16,36 @@ func tableConsulIntention(ctx context.Context) *plugin.Table {
 		Description: "Retrieve information about your intentions.",
 		List: &plugin.ListConfig{
 			Hydrate: listIntentions,
+			KeyColumns: []*plugin.KeyColumn{
+				{
+					Name:    "action",
+					Require: plugin.Optional,
+				},
+				{
+					Name:    "source_name",
+					Require: plugin.Optional,
+				},
+				{
+					Name:    "destination_name",
+					Require: plugin.Optional,
+				},
+				{
+					Name:    "source_ns",
+					Require: plugin.Optional,
+				},
+				{
+					Name:    "destination_ns",
+					Require: plugin.Optional,
+				},
+				{
+					Name:    "source_type",
+					Require: plugin.Optional,
+				},
+				{
+					Name:    "precedence",
+					Require: plugin.Optional,
+				},
+			},
 		},
 		Columns: []*plugin.Column{
 			{
@@ -126,8 +157,48 @@ func listIntentions(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateD
 		return nil, err
 	}
 
-	input := &api.QueryOptions{
-		//	PerPage: int32(maxLimit),
+	input := &api.QueryOptions{}
+	if d.EqualsQuals["action"] != nil {
+		filter := "Action==" + d.EqualsQualString("action")
+		input.Filter = filter
+	} else if d.EqualsQuals["source_name"] != nil {
+		if d.EqualsQualString("source_name") == "*" {
+			filter := "SourceName==\"*\""
+			input.Filter = filter
+		} else {
+			filter := "SourceName==" + d.EqualsQualString("source_name")
+			input.Filter = filter
+		}
+	} else if d.EqualsQuals["destination_name"] != nil {
+		if d.EqualsQualString("destination_name") == "*" {
+			filter := "DestinationName==\"*\""
+			input.Filter = filter
+		} else {
+			filter := "DestinationName==" + d.EqualsQualString("destination_name")
+			input.Filter = filter
+		}
+	} else if d.EqualsQuals["source_ns"] != nil {
+		if d.EqualsQualString("source_ns") == "*" {
+			filter := "SourceNS==\"*\""
+			input.Filter = filter
+		} else {
+			filter := "SourceNS==" + d.EqualsQualString("source_ns")
+			input.Filter = filter
+		}
+	} else if d.EqualsQuals["destination_ns"] != nil {
+		if d.EqualsQualString("destination_ns") == "*" {
+			filter := "DestinationNS==\"*\""
+			input.Filter = filter
+		} else {
+			filter := "DestinationNS==" + d.EqualsQualString("destination_ns")
+			input.Filter = filter
+		}
+	} else if d.EqualsQuals["source_type"] != nil {
+		filter := "SourceType==" + d.EqualsQualString("source_type")
+		input.Filter = filter
+	} else if d.EqualsQuals["precedence"] != nil {
+		filter := "Precedence==" + fmt.Sprint(d.EqualsQuals["precedence"].GetInt64Value())
+		input.Filter = filter
 	}
 
 	intentions, _, err := client.Connect().Intentions(input)

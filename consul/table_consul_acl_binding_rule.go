@@ -16,6 +16,16 @@ func tableConsulACLBindingRule(ctx context.Context) *plugin.Table {
 		List: &plugin.ListConfig{
 			ParentHydrate: listACLAuthMethods,
 			Hydrate:       listACLBindingRules,
+			KeyColumns: []*plugin.KeyColumn{
+				{
+					Name:    "namespace",
+					Require: plugin.Optional,
+				},
+				{
+					Name:    "auth_method",
+					Require: plugin.Optional,
+				},
+			},
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.SingleColumn("id"),
@@ -88,14 +98,20 @@ func tableConsulACLBindingRule(ctx context.Context) *plugin.Table {
 func listACLBindingRules(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	method := h.Item.(*api.ACLAuthMethodListEntry)
 
+	// check if the provided auth_method is not matching with the parentHydrate
+	if d.EqualsQuals["auth_method"] != nil && d.EqualsQualString("auth_method") != method.Name {
+		return nil, nil
+	}
+
 	client, err := getClient(ctx, d)
 	if err != nil {
 		plugin.Logger(ctx).Error("consul_acl_binding_rule.listACLBindingRules", "connection_error", err)
 		return nil, err
 	}
 
-	input := &api.QueryOptions{
-		//PerPage: int32(maxLimit),
+	input := &api.QueryOptions{}
+	if d.EqualsQuals["namespace"] != nil {
+		input.Namespace = d.EqualsQualString("namespace")
 	}
 
 	bindingRules, _, err := client.ACL().BindingRuleList(method.Name, input)
@@ -116,7 +132,7 @@ func listACLBindingRules(ctx context.Context, d *plugin.QueryData, h *plugin.Hyd
 	return nil, nil
 }
 
-func getACLBindingRule(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func getACLBindingRule(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 	id := d.EqualsQualString("id")
 

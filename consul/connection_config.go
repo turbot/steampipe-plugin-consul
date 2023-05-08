@@ -44,7 +44,7 @@ func GetConfig(connection *plugin.Connection) consulConfig {
 	return config
 }
 
-func getClient(ctx context.Context, d *plugin.QueryData) (*api.Client, error) {
+func getClient(_ context.Context, d *plugin.QueryData) (*api.Client, error) {
 	// Load connection from cache
 	cacheKey := "consul"
 	if cachedData, ok := d.ConnectionManager.Cache.Get(cacheKey); ok {

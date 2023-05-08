@@ -81,11 +81,7 @@ func listNamespaces(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateD
 		return nil, err
 	}
 
-	input := &api.QueryOptions{
-		//	PerPage: int32(maxLimit),
-	}
-
-	namespaces, _, err := client.Namespaces().List(input)
+	namespaces, _, err := client.Namespaces().List(&api.QueryOptions{})
 	if err != nil {
 		plugin.Logger(ctx).Error("consul_namespace.listNamespaces", "api_error", err)
 		return nil, err

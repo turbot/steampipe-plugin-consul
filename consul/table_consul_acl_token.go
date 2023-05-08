@@ -15,6 +15,12 @@ func tableConsulACLToken(ctx context.Context) *plugin.Table {
 		Description: "Retrieve information about your ACL tokens.",
 		List: &plugin.ListConfig{
 			Hydrate: listACLTokens,
+			KeyColumns: []*plugin.KeyColumn{
+				{
+					Name:    "namespace",
+					Require: plugin.Optional,
+				},
+			},
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.SingleColumn("accessor_id"),
@@ -134,8 +140,9 @@ func listACLTokens(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateDa
 		return nil, err
 	}
 
-	input := &api.QueryOptions{
-		//	PerPage: int32(maxLimit),
+	input := &api.QueryOptions{}
+	if d.EqualsQuals["namespace"] != nil {
+		input.Namespace = d.EqualsQualString("namespace")
 	}
 
 	tokens, _, err := client.ACL().TokenList(input)
