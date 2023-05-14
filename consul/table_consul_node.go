@@ -2,6 +2,7 @@ package consul
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/hashicorp/consul/api"
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
@@ -15,6 +16,12 @@ func tableConsulNode(ctx context.Context) *plugin.Table {
 		Description: "Retrieve information about your nodes.",
 		List: &plugin.ListConfig{
 			Hydrate: listNodes,
+			KeyColumns: []*plugin.KeyColumn{
+				{
+					Name:    "address",
+					Require: plugin.Optional,
+				},
+			},
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.SingleColumn("node"),
@@ -91,7 +98,13 @@ func listNodes(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) 
 		return nil, err
 	}
 
-	nodes, _, err := client.Catalog().Nodes(&api.QueryOptions{})
+	input := &api.QueryOptions{}
+	if d.EqualsQualString("address") != "" {
+		filter := fmt.Sprintf("Address== %q\n", d.EqualsQualString("address"))
+		input.Filter = filter
+	}
+
+	nodes, _, err := client.Catalog().Nodes(input)
 	if err != nil {
 		plugin.Logger(ctx).Error("consul_node.listNodes", "api_error", err)
 		return nil, err

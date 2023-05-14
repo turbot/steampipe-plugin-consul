@@ -2,6 +2,7 @@ package consul
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/hashicorp/consul/api"
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
@@ -18,14 +19,6 @@ func tableConsulService(ctx context.Context) *plugin.Table {
 			KeyColumns: []*plugin.KeyColumn{
 				{
 					Name:    "namespace",
-					Require: plugin.Optional,
-				},
-				{
-					Name:    "node",
-					Require: plugin.Optional,
-				},
-				{
-					Name:    "service_id",
 					Require: plugin.Optional,
 				},
 				{
@@ -166,16 +159,8 @@ func listServices(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateDat
 	if d.EqualsQuals["namespace"] != nil {
 		input.Namespace = d.EqualsQualString("namespace")
 	}
-	if d.EqualsQuals["service_id"] != nil {
-		filter := "ServiceID==" + d.EqualsQualString("service_id")
-		input.Filter = filter
-	}
 	if d.EqualsQuals["service_name"] != nil {
-		filter := "ServiceName==" + d.EqualsQualString("service_name")
-		input.Filter = filter
-	}
-	if d.EqualsQuals["node"] != nil {
-		filter := "Node==" + d.EqualsQualString("node")
+		filter := fmt.Sprintf("ServiceName== %q\n", d.EqualsQualString("service_name"))
 		input.Filter = filter
 	}
 

@@ -2,6 +2,7 @@ package consul
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/hashicorp/consul/api"
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
@@ -15,6 +16,12 @@ func tableConsulNamespace(ctx context.Context) *plugin.Table {
 		Description: "Retrieve information about your namespaces.",
 		List: &plugin.ListConfig{
 			Hydrate: listNamespaces,
+			KeyColumns: []*plugin.KeyColumn{
+				{
+					Name:    "create_index",
+					Require: plugin.Optional,
+				},
+			},
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.SingleColumn("name"),
@@ -81,7 +88,13 @@ func listNamespaces(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateD
 		return nil, err
 	}
 
-	namespaces, _, err := client.Namespaces().List(&api.QueryOptions{})
+	input := &api.QueryOptions{}
+	if d.EqualsQuals["create_index"] != nil {
+		filter := fmt.Sprintf("CreateIndex== %q\n", d.EqualsQuals["create_index"].GetStringValue())
+		input.Filter = filter
+	}
+
+	namespaces, _, err := client.Namespaces().List(input)
 	if err != nil {
 		plugin.Logger(ctx).Error("consul_namespace.listNamespaces", "api_error", err)
 		return nil, err

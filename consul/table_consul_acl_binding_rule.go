@@ -110,7 +110,7 @@ func listACLBindingRules(ctx context.Context, d *plugin.QueryData, h *plugin.Hyd
 	}
 
 	input := &api.QueryOptions{}
-	if d.EqualsQuals["namespace"] != nil {
+	if d.EqualsQualString("namespace") != "" {
 		input.Namespace = d.EqualsQualString("namespace")
 	}
 

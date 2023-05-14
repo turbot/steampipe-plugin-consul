@@ -2,6 +2,7 @@ package consul
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/hashicorp/consul/api"
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
@@ -18,6 +19,10 @@ func tableConsulACLToken(ctx context.Context) *plugin.Table {
 			KeyColumns: []*plugin.KeyColumn{
 				{
 					Name:    "namespace",
+					Require: plugin.Optional,
+				},
+				{
+					Name:    "create_index",
 					Require: plugin.Optional,
 				},
 			},
@@ -143,6 +148,10 @@ func listACLTokens(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateDa
 	input := &api.QueryOptions{}
 	if d.EqualsQuals["namespace"] != nil {
 		input.Namespace = d.EqualsQualString("namespace")
+	}
+	if d.EqualsQuals["create_index"] != nil {
+		filter := fmt.Sprintf("CreateIndex== %q\n", d.EqualsQuals["create_index"].GetStringValue())
+		input.Filter = filter
 	}
 
 	tokens, _, err := client.ACL().TokenList(input)

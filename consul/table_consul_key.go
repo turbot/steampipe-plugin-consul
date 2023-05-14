@@ -2,6 +2,7 @@ package consul
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/hashicorp/consul/api"
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
@@ -18,6 +19,10 @@ func tableConsulKey(ctx context.Context) *plugin.Table {
 			KeyColumns: []*plugin.KeyColumn{
 				{
 					Name:    "namespace",
+					Require: plugin.Optional,
+				},
+				{
+					Name:    "create_index",
 					Require: plugin.Optional,
 				},
 			},
@@ -94,6 +99,10 @@ func listKeys(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (
 	input := &api.QueryOptions{}
 	if d.EqualsQuals["namespace"] != nil {
 		input.Namespace = d.EqualsQualString("namespace")
+	}
+	if d.EqualsQuals["create_index"] != nil {
+		filter := fmt.Sprintf("CreateIndex== %q\n", d.EqualsQuals["create_index"].GetStringValue())
+		input.Filter = filter
 	}
 
 	keys, _, err := client.KV().List("", input)
