@@ -2,7 +2,7 @@
 organization: Turbot
 category: ["software development"]
 icon_url: "/images/plugins/turbot/consul.svg"
-brand_color: "#850101"
+brand_color: "#E03875"
 display_name: "Consul"
 short_name: "consul"
 description: "Steampipe plugin to query nodes, acls, services and more from Consul."
