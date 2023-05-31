@@ -21,7 +21,7 @@ List your Consul services:
 ```sql
 select
   service_id,
-  service_name
+  service_name,
   node,
   address,
   datacenter,
@@ -31,11 +31,11 @@ from
 ```
 
 ```
-+------------+--------+---------------+---------------------------------+-----------+
-| service_id | node   | address       | datacenter                      | namespace |
-+------------+--------+---------------+---------------------------------+-----------+
-| consul     | consul | 172.25.34.191 | consul-quickstart-1683117303883 | default   |
-+------------+--------+---------------+---------------------------------+-----------+
++------------------------------------------------+--------------+------------------+---------------+------------+-----------+
+| service_id                                     | service_name | node             | address       | datacenter | namespace |
++------------------------------------------------+--------------+------------------+---------------+------------+-----------+
+| consul                                         | consul       | ip-172-31-30-170 | 172.31.30.170 | dc1        | default   |
++------------------------------------------------+--------------+------------------+---------------+------------+-----------+
 ```
 
 ## Documentation
@@ -77,7 +77,7 @@ connection "consul" {
 
   # `token`(optional) - The ACL token. It is required for ACL-enabled Consul servers.
   # For more information on the ACL Token, please see https://developer.hashicorp.com/consul/docs/security/acl/acl-tokens.
-  # Can also be set with the CONSUL_HTTP_TOKEN environment variable.
+  # Can also be set with the CONSUL_HTTP_TOKEN or CONSUL_TOKEN environment variable.
   # token = "c178b810-8b18-6f38-016f-725ddec5d58"
 
   # `namespace`(optional) - This feature requires HashiCorp Cloud Platform (HCP) or self-managed Consul Enterprise. This parameter is not required in case of non-Enterprise.
@@ -136,15 +136,13 @@ connection "consul" {
 }
 ```
 
-or through environment variables
-
-The Consul plugin will use the Consul environment variable to obtain credentials **only if the `address`,`token`, `namespace` and `partition` is not specified** in the connection:
+Alternatively, you can also use the standard Consul environment variable to obtain credentials **only if the `address`, `token`, `namespace`, and `partition` is not specified** in the connection:
 
 ```sh
-export CONSUL_HTTP_ADDR="http://18.118.144.168:4646"
-export CONSUL_NAMESPACE="*"
-export CONSUL_HTTP_TOKEN="c178b810-8b18-6f38-016f-725ddec5d58"
-export CONSUL_PARTITION="default"
+export CONSUL_HTTP_ADDR=http://18.118.144.168:4646
+export CONSUL_NAMESPACE=*
+export CONSUL_HTTP_TOKEN=c178b810-8b18-6f38-016f-725ddec5d58
+export CONSUL_PARTITION=default
 ```
 
 ## Get involved

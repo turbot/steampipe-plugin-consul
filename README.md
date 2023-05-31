@@ -11,6 +11,8 @@ Use SQL to query nodes, acls, services and more from Consul.
 
 ## Quick start
 
+### Install
+
 Download and install the latest Consul plugin:
 
 ```bash
@@ -19,11 +21,9 @@ steampipe plugin install consul
 
 Configure your [credentials](https://hub.steampipe.io/plugins/turbot/consul#credentials) and [config file](https://hub.steampipe.io/plugins/turbot/consul#configuration).
 
-### Configuring Consul Credentials
-
 Configure your account details in `~/.steampipe/config/consul.spc`:
 
-You may specify the Address to authenticate:
+You may specify the address to authenticate:
 
 - `address`: The address of the consul server.
 
@@ -34,7 +34,7 @@ connection "consul" {
 }
 ```
 
-or you may specify the Address and Token to authenticate:
+Or you may specify the address and token to authenticate:
 
 - `address`: The address of the consul server.
 - `token`: The ACL token.
@@ -47,7 +47,7 @@ connection "consul" {
 }
 ```
 
-or if you are using consul enterprise then you may specify the Address, Token, namespace and partition to authenticate:
+Or if you are using consul enterprise then you may specify the address, token, namespace, and partition to authenticate:
 
 - `address`: The address of the consul server.
 - `token`: The ACL token.
@@ -64,13 +64,13 @@ connection "consul" {
 }
 ```
 
-or through environment variables
+Or through environment variables:
 
 ```sh
-export CONSUL_HTTP_ADDR="http://18.118.144.168:4646"
-export CONSUL_NAMESPACE="*"
-export CONSUL_HTTP_TOKEN="c178b810-8b18-6f38-016f-725ddec5d58"
-export CONSUL_PARTITION="default"
+export CONSUL_HTTP_ADDR=http://18.118.144.168:4646
+export CONSUL_NAMESPACE=*
+export CONSUL_HTTP_TOKEN=c178b810-8b18-6f38-016f-725ddec5d58
+export CONSUL_PARTITION=default
 ```
 
 Run steampipe:
@@ -84,7 +84,7 @@ List your Consul services:
 ```sql
 select
   service_id,
-  service_name
+  service_name,
   node,
   address,
   datacenter,
@@ -94,11 +94,11 @@ from
 ```
 
 ```
-+------------+--------+---------------+---------------------------------+-----------+
-| service_id | node   | address       | datacenter                      | namespace |
-+------------+--------+---------------+---------------------------------+-----------+
-| consul     | consul | 172.25.34.191 | consul-quickstart-1683117303883 | default   |
-+------------+--------+---------------+---------------------------------+-----------+
++------------------------------------------------+--------------+------------------+---------------+------------+-----------+
+| service_id                                     | service_name | node             | address       | datacenter | namespace |
++------------------------------------------------+--------------+------------------+---------------+------------+-----------+
+| consul                                         | consul       | ip-172-31-30-170 | 172.31.30.170 | dc1        | default   |
++------------------------------------------------+--------------+------------------+---------------+------------+-----------+
 ```
 
 ## Developing

@@ -29,7 +29,7 @@ select
   modify_index,
   partition
 from
-  consul_acl_auth_method;
+  consul_acl_auth_method
 where
   namespace = 'default';
 ```

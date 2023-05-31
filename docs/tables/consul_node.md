@@ -10,7 +10,7 @@ A node refers to a physical or virtual machine that runs a Consul agent. Each Co
 select
   id,
   node,
-  address
+  address,
   datacenter,
   create_index,
   modify_index,
@@ -25,7 +25,7 @@ from
 select
   id,
   node,
-  address
+  address,
   datacenter,
   create_index,
   modify_index,

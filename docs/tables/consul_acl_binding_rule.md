@@ -64,7 +64,5 @@ select
   b.bind_type as bind_type
 from
   consul_acl_binding_rule as b
-  left join
-    consul_acl_auth_method as a
-    on b.auth_method = a.name;
+  left join consul_acl_auth_method as a on b.auth_method = a.name;
 ```

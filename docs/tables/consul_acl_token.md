@@ -36,7 +36,7 @@ where
   local;
 ```
 
-### List tokens which will not expire
+### List tokens which will never expire
 
 ```sql
 select

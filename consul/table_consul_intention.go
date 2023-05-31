@@ -122,6 +122,14 @@ func tableConsulIntention(ctx context.Context) *plugin.Table {
 				Type:        proto.ColumnType_STRING,
 				Description: "Hash of the contents of the intention.",
 			},
+
+			/// Steampipe standard columns
+			{
+				Name:        "title",
+				Description: "The title of the intention.",
+				Type:        proto.ColumnType_STRING,
+				Transform:   transform.FromField("ID"),
+			},
 		},
 	}
 }

@@ -34,7 +34,7 @@ where
   source_ns = 'default';
 ```
 
-### List intentions with highest precedence
+### List intentions in order of highest precedence
 
 ```sql
 select

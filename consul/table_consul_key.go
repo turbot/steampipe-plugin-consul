@@ -35,7 +35,7 @@ func tableConsulKey(ctx context.Context) *plugin.Table {
 			{
 				Name:        "key",
 				Type:        proto.ColumnType_STRING,
-				Description: "Name is the name of the Key. It must be unique and must be a DNS hostname. There are also other reserved names that may not be used.",
+				Description: "Key is the name of the key. It is also part of the URL path when accessed via the API.",
 			},
 			{
 				Name:        "session",

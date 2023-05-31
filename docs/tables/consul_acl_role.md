@@ -45,7 +45,7 @@ select
   rules,
   description,
   create_index,
-  modify_index,
+  modify_index
 from
   consul_acl_policy
 where

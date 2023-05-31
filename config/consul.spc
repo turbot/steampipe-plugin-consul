@@ -7,7 +7,7 @@ connection "consul" {
 
   # `token`(optional) - The ACL token. It is required for ACL-enabled Consul servers.
   # For more information on the ACL Token, please see https://developer.hashicorp.com/consul/docs/security/acl/acl-tokens.
-  # Can also be set with the CONSUL_HTTP_TOKEN environment variable.
+  # Can also be set with the CONSUL_HTTP_TOKEN or CONSUL_TOKEN environment variable.
   # token = "c178b810-8b18-6f38-016f-725ddec5d58"
 
   # `namespace`(optional) - This feature requires HashiCorp Cloud Platform (HCP) or self-managed Consul Enterprise. This parameter is not required in case of non-Enterprise.
