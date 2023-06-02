@@ -4,7 +4,7 @@ go 1.19
 
 require github.com/hashicorp/consul/api v1.20.0
 
-require github.com/turbot/steampipe-plugin-sdk/v5 v5.3.0
+require github.com/turbot/steampipe-plugin-sdk/v5 v5.4.1
 
 require (
 	cloud.google.com/go v0.65.0 // indirect

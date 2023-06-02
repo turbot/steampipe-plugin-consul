@@ -175,7 +175,7 @@ func listServices(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateDat
 			for _, tag := range tags {
 				services, _, err := client.Catalog().Service(service, tag, &api.QueryOptions{})
 				if err != nil {
-					plugin.Logger(ctx).Error("consul_service.Service_with_tag", "api_error", err)
+					plugin.Logger(ctx).Error("consul_service.service_with_tag", "api_error", err)
 					return nil, err
 				}
 				if services != nil {
@@ -190,7 +190,7 @@ func listServices(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateDat
 		} else {
 			services, _, err := client.Catalog().Service(service, "", &api.QueryOptions{})
 			if err != nil {
-				plugin.Logger(ctx).Error("consul_service.Service_without_tag", "api_error", err)
+				plugin.Logger(ctx).Error("consul_service.service_without_tag", "api_error", err)
 				return nil, err
 			}
 			if services != nil {

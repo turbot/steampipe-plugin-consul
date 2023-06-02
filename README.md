@@ -21,46 +21,14 @@ steampipe plugin install consul
 
 Configure your [credentials](https://hub.steampipe.io/plugins/turbot/consul#credentials) and [config file](https://hub.steampipe.io/plugins/turbot/consul#configuration).
 
-Configure your account details in `~/.steampipe/config/consul.spc`:
-
-You may specify the address to authenticate:
-
-- `address`: The address of the consul server.
-
-```hcl
-connection "consul" {
-  plugin  = "consul"
-  address = "http://52.14.112.248:8500"
-}
-```
-
-Or you may specify the address and token to authenticate:
-
-- `address`: The address of the consul server.
-- `token`: The ACL token.
-
-```hcl
-connection "consul" {
-  plugin  = "consul"
-  address = "http://52.14.112.248:8500"
-  token   = "c178b810-8b18-6f38-016f-725ddec5d58"
-}
-```
-
-Or if you are using consul enterprise then you may specify the address, token, namespace, and partition to authenticate:
-
-- `address`: The address of the consul server.
-- `token`: The ACL token.
-- `namespace`: The consul namespace.
-- `partition`: The consul partition.
+Add your configuration details in `~/.steampipe/config/consul.spc`:
 
 ```hcl
 connection "consul" {
   plugin    = "consul"
+  # Authentication information
   address   = "http://52.14.112.248:8500"
   token     = "c178b810-8b18-6f38-016f-725ddec5d58"
-  namespace = '*'
-  partition = 'default'
 }
 ```
 
@@ -68,9 +36,7 @@ Or through environment variables:
 
 ```sh
 export CONSUL_HTTP_ADDR=http://18.118.144.168:4646
-export CONSUL_NAMESPACE=*
 export CONSUL_HTTP_TOKEN=c178b810-8b18-6f38-016f-725ddec5d58
-export CONSUL_PARTITION=default
 ```
 
 Run steampipe:

@@ -5,7 +5,7 @@ icon_url: "/images/plugins/turbot/consul.svg"
 brand_color: "#E03875"
 display_name: "Consul"
 short_name: "consul"
-description: "Steampipe plugin to query nodes, acls, services and more from Consul."
+description: "Steampipe plugin to query nodes, ACLs, services and more from Consul."
 og_description: "Query Consul with SQL! Open source CLI. No DB required."
 og_image: "/images/plugins/turbot/consul-social-graphic.png"
 ---
@@ -77,71 +77,28 @@ connection "consul" {
 
   # `token`(optional) - The ACL token. It is required for ACL-enabled Consul servers.
   # For more information on the ACL Token, please see https://developer.hashicorp.com/consul/docs/security/acl/acl-tokens.
-  # Can also be set with the CONSUL_HTTP_TOKEN or CONSUL_TOKEN environment variable.
+  # Can also be set with the CONSUL_HTTP_TOKEN environment variable.
   # token = "c178b810-8b18-6f38-016f-725ddec5d58"
 
-  # `namespace`(optional) - This feature requires HashiCorp Cloud Platform (HCP) or self-managed Consul Enterprise. This parameter is not required in case of non-Enterprise.
+  # `namespace`(optional) - This feature requires HashiCorp Cloud Platform (HCP) or self-managed Consul Enterprise. This parameter is not required in case of non-Enterprise access.
   # API will execute with default namespace if this parameter is not set.
   # Can also be set with the CONSUL_NAMESPACE environment variable.
   # "*" indicates all the namespaces available.
-  namespace = "*"
+  # namespace = "*"
 
-  # `partition`(optional) - This feature requires HashiCorp Cloud Platform (HCP) or self-managed Consul Enterprise. This parameter is not required in case of non-Enterprise.
+  # `partition`(optional) - This feature requires HashiCorp Cloud Platform (HCP) or self-managed Consul Enterprise. This parameter is not required in case of non-Enterprise access.
   # API will execute with default partition if this parameter is not set.
   # Can also be set with the CONSUL_PARTITION environment variable.
   # partition = "default"
 }
 ```
 
-## Configuring Consul Credentials
-
-You may specify the Address to authenticate:
-
-- `address`: The address of the consul server.
-
-```hcl
-connection "consul" {
-  plugin  = "consul"
-  address = "http://52.14.112.248:8500"
-}
-```
-
-or you may specify the Address and Token to authenticate:
-
-- `address`: The address of the consul server.
-- `token`: The ACL token.
-
-```hcl
-connection "consul" {
-  plugin  = "consul"
-  address = "http://52.14.112.248:8500"
-  token   = "c178b810-8b18-6f38-016f-725ddec5d58"
-}
-```
-
-or if you are using consul enterprise then you may specify the Address, Token, namespace and partition to authenticate:
-
-- `address`: The address of the consul server.
-- `token`: The ACL token.
-- `namespace`: The consul namespace.
-- `partition`: The consul partition.
-
-```hcl
-connection "consul" {
-  plugin    = "consul"
-  address   = "http://52.14.112.248:8500"
-  token     = "c178b810-8b18-6f38-016f-725ddec5d58"
-  namespace = '*'
-  partition = 'default'
-}
-```
-
-Alternatively, you can also use the standard Consul environment variable to obtain credentials **only if the `address`, `token`, `namespace`, and `partition` is not specified** in the connection:
+Alternatively, you can also use the standard Consul environment variable to obtain credentials **only if other arguments (`address`, `token`, `namespace`, and `partition`) are not specified** in the connection:
 
 ```sh
 export CONSUL_HTTP_ADDR=http://18.118.144.168:4646
-export CONSUL_NAMESPACE=*
 export CONSUL_HTTP_TOKEN=c178b810-8b18-6f38-016f-725ddec5d58
+export CONSUL_NAMESPACE=*
 export CONSUL_PARTITION=default
 ```
 
