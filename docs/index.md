@@ -75,27 +75,26 @@ connection "consul" {
   # This can also be set via the CONSUL_HTTP_ADDR environment variable.
   # address = "http://52.14.112.248:8500"
 
-  # An ACL token required for ACL-enabled Consul servers. Optional.
+  # An ACL token is required for ACL-enabled Consul servers. Optional.
   # For more information on the ACL Token, please see https://developer.hashicorp.com/consul/docs/security/acl/acl-tokens.
   # This can also be set via the CONSUL_HTTP_TOKEN environment variable.
   # token = "c178b810-8b18-6f38-016f-725ddec5d58"
 
-  # namespace is required for Enterprise access. Optional.
+  # Namespace is required for Consul Enterprise access. Optional.
   # API will execute with default namespace if this parameter is not set.
   # This can also be set via the CONSUL_NAMESPACE environment variable.
   # "*" indicates all the namespaces available.
   # namespace = "*"
 
-  # partition is required for Enterprise access. Optional.
+  # Partition is required for Consul Enterprise access. Optional.
   # API will execute with default partition if this parameter is not set.
   # This can also be set via the CONSUL_PARTITION environment variable.
   # partition = "default"
 }
 ```
 
-`address` parameter is required in the consul.spc file to query all the tables.
-`address` and `token` parameters are required in the consul.spc file to query the ACL tables.
-`address`, `namespace`, and `partition` parameters are required in the consul.spc file to query the Enterprice accessible tables.
+- `token` parameter is only required to query the ACL tables like `consul_acl_auth_method`, `consul_acl_binding_rule`, `consul_acl_policy`, `consul_acl_role` and `consul_acl_token` tables.
+- `namespace`, and `partition` parameters are only required to query the `consul_namespace` table.
 
 Alternatively, you can also use the standard Consul environment variable to obtain credentials **only if other arguments (`address`, `token`, `namespace`, and `partition`) are not specified** in the connection:
 
