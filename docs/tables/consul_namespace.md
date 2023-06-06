@@ -2,6 +2,8 @@
 
 With Consul Enterprise 1.7.0+, data for different users or teams can be isolated from each other with the use of namespaces. Namespaces help reduce operational challenges by removing restrictions around uniqueness of resource names across distinct teams, and enable operators to provide self-service through delegation of administrative privileges.
 
+You need to specify the `namespace` and `partition` parameters in the `consul.spc` file to be able to query this table.
+
 ## Examples
 
 ### Basic info

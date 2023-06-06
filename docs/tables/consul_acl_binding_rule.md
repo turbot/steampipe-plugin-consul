@@ -2,6 +2,8 @@
 
 An ACL binding rule is a configuration setting that associates a token with a set of policies that define what the token is allowed to do. The binding rule specifies which resources the token has access to and what actions it can perform on those resources.
 
+You need to specify the `token` parameter in the `consul.spc` file to be able to query this table.
+
 ## Examples
 
 ### Basic info

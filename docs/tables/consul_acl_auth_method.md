@@ -2,6 +2,8 @@
 
 An auth method is a component in Consul that performs authentication against a trusted external party to authorize the creation of an ACL tokens usable within the local datacenter.
 
+You need to specify the `token` parameter in the `consul.spc` file to be able to query this table.
+
 ## Examples
 
 ### Basic info

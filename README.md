@@ -32,6 +32,10 @@ connection "consul" {
 }
 ```
 
+`address` parameter is required in the consul.spc file to query all the tables.
+`address` and `token` parameters are required in the consul.spc file to query the ACL tables.
+`address`, `namespace`, and `partition` parameters are requirede in the consul.spc file to query the Enterprice accessible tables.
+
 Or through environment variables:
 
 ```sh

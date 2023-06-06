@@ -2,6 +2,8 @@
 
 A role is a collection of policies that your ACL administrator can link to a token. They enable you to reuse policies by decoupling the policies from the token distributed to team members. Instead, the token is linked to the role, which is able to hold several policies that can be updated asynchronously without distributing new tokens to users. As a result, roles can provide a more convenient authentication infrastructure than creating unique policies and tokens for each requester.
 
+You need to specify the `token` parameter in the `consul.spc` file to be able to query this table.
+
 ## Examples
 
 ### Basic info

@@ -2,6 +2,8 @@
 
 A policy is a group of one or more ACL rules that are linked to ACL tokens.
 
+You need to specify the `token` parameter in the `consul.spc` file to be able to query this table.
+
 ## Examples
 
 ### Basic info
