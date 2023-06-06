@@ -95,7 +95,7 @@ connection "consul" {
 
 `address` parameter is required in the consul.spc file to query all the tables.
 `address` and `token` parameters are required in the consul.spc file to query the ACL tables.
-`address`, `namespace`, and `partition` parameters are requirede in the consul.spc file to query the Enterprice accessible tables.
+`address`, `namespace`, and `partition` parameters are required in the consul.spc file to query the Enterprice accessible tables.
 
 Alternatively, you can also use the standard Consul environment variable to obtain credentials **only if other arguments (`address`, `token`, `namespace`, and `partition`) are not specified** in the connection:
 
