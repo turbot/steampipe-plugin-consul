@@ -32,9 +32,8 @@ connection "consul" {
 }
 ```
 
-`address` parameter is required in the consul.spc file to query all the tables.
-`address` and `token` parameters are required in the consul.spc file to query the ACL tables.
-`address`, `namespace`, and `partition` parameters are required in the consul.spc file to query the Enterprice accessible tables.
+- `token` parameter is only required to query the ACL tables like `consul_acl_auth_method`, `consul_acl_binding_rule`, `consul_acl_policy`, `consul_acl_role` and `consul_acl_token` tables.
+- `namespace`, and `partition` parameters are only required to query the `consul_namespace` table.
 
 Or through environment variables:
 
