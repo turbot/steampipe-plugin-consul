@@ -1,12 +1,20 @@
-# Table: consul_acl_role
+---
+title: "Steampipe Table: consul_acl_role - Query OCI Consul ACL Roles using SQL"
+description: "Allows users to query Consul ACL Roles, specifically the role ID, name, and description, providing insights into access control and permissions."
+---
 
-A role is a collection of policies that your ACL administrator can link to a token. They enable you to reuse policies by decoupling the policies from the token distributed to team members. Instead, the token is linked to the role, which is able to hold several policies that can be updated asynchronously without distributing new tokens to users. As a result, roles can provide a more convenient authentication infrastructure than creating unique policies and tokens for each requester.
+# Table: consul_acl_role - Query OCI Consul ACL Roles using SQL
 
-You need to specify the `token` parameter in the `consul.spc` file to be able to query this table.
+Consul ACL Roles are a feature in Oracle Cloud Infrastructure's Consul service. They are used to manage permissions and access control. ACL Roles can be assigned to tokens to grant the token the permissions of the role. 
+
+## Table Usage Guide
+
+The `consul_acl_role` table provides insights into ACL Roles within OCI Consul. As a system administrator, explore role-specific details through this table, including role ID, name, and description. Utilize it to manage and monitor access control and permissions within your OCI environment.
 
 ## Examples
 
 ### Basic info
+Explore the roles within your Consul ACL system to gain insights into their creation and modification indices, as well as their associated namespaces and partitions. This is useful for understanding the structure and organization of your access control system.
 
 ```sql
 select
@@ -22,6 +30,7 @@ from
 ```
 
 ### List roles which are not attached to any service identities
+Discover the roles that are not linked to any service identities. This can help in identifying unused roles and aid in system optimization by removing unnecessary elements.
 
 ```sql
 select
@@ -39,6 +48,7 @@ where
 ```
 
 ### Show ACL policies attached to a particular ACL role
+Determine the access control list (ACL) policies linked to a specific ACL role. This can be helpful in managing and understanding the permissions associated with different roles within your system.
 
 ```sql
 select
@@ -64,6 +74,7 @@ where
 ```
 
 ### List roles which are attached to ACL tokens
+Discover the segments that have roles attached to ACL tokens to understand the user permissions and security settings in your system. This can help in managing access control and identifying potential security risks.
 
 ```sql
 select
