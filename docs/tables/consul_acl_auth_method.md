@@ -11,6 +11,9 @@ Consul ACL Auth Method is a feature within HashiCorp Consul that enables authent
 
 The `consul_acl_auth_method` table provides insights into the ACL Auth Methods within HashiCorp Consul. As a security engineer, explore method-specific details through this table, including the type of authentication method, its configuration, and associated rules. Utilize it to uncover information about methods, such as those using Kubernetes or JWT, the configuration parameters for each method, and the verification of rules associated with each method.
 
+**Important Notes**
+- You need to specify the `token` parameter in the `consul.spc` file to be able to query this table.
+
 ## Examples
 
 ### Basic info

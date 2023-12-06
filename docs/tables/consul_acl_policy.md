@@ -11,6 +11,9 @@ Consul ACL (Access Control List) Policies are a set of rules that control the ac
 
 The `consul_acl_policy` table provides insights into ACL Policies within HashiCorp's Consul. As a DevOps engineer, explore policy-specific details through this table, including the rules, descriptions, and associated metadata. Utilize it to uncover information about policies, such as their specific rules, the actions they allow or deny, and to verify the overall security configuration of your Consul cluster.
 
+**Important Notes**
+- You need to specify the `token` parameter in the `consul.spc` file to be able to query this table.
+
 ## Examples
 
 ### Basic info

@@ -11,6 +11,9 @@ Consul ACL Tokens are a security feature in HashiCorp Consul that provides a fle
 
 The `consul_acl_token` table provides insights into ACL Tokens within HashiCorp Consul. As a security engineer, explore token-specific details through this table, including permissions, policies, and associated metadata. Utilize it to uncover information about ACL Tokens, such as those with unrestricted permissions, the policies associated with each token, and the verification of access rules.
 
+**Important Notes**
+- You need to specify the `token` parameter in the `consul.spc` file to be able to query this table.
+
 ## Examples
 
 ### Basic info

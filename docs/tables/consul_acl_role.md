@@ -5,11 +5,14 @@ description: "Allows users to query Consul ACL Roles, specifically the role ID, 
 
 # Table: consul_acl_role - Query OCI Consul ACL Roles using SQL
 
-Consul ACL Roles are a feature in Oracle Cloud Infrastructure's Consul service. They are used to manage permissions and access control. ACL Roles can be assigned to tokens to grant the token the permissions of the role. 
+Consul ACL Roles are a feature in Oracle Cloud Infrastructure's Consul service. They are used to manage permissions and access control. ACL Roles can be assigned to tokens to grant the token the permissions of the role.
 
 ## Table Usage Guide
 
 The `consul_acl_role` table provides insights into ACL Roles within OCI Consul. As a system administrator, explore role-specific details through this table, including role ID, name, and description. Utilize it to manage and monitor access control and permissions within your OCI environment.
+
+**Important Notes**
+- You need to specify the `token` parameter in the `consul.spc` file to be able to query this table.
 
 ## Examples
 

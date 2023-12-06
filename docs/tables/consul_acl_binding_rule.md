@@ -11,6 +11,9 @@ Consul ACL Binding Rules is a feature in HashiCorp Consul that allows you to def
 
 The `consul_acl_binding_rule` table provides insights into ACL Binding Rules within HashiCorp Consul. As a Security Engineer, explore rule-specific details through this table, including rule properties, associated service, and rule status. Utilize it to uncover information about rules, such as the binding rule configuration, the service associated with each rule, and the current status of each rule.
 
+**Important Notes**
+- You need to specify the `token` parameter in the `consul.spc` file to be able to query this table.
+
 ## Examples
 
 ### Basic info

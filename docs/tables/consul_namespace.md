@@ -11,6 +11,9 @@ A Consul Namespace is a resource within HashiCorp Consul that allows you to isol
 
 The `consul_namespace` table provides insights into Consul Namespaces within HashiCorp Consul. As a DevOps engineer, you can explore namespace-specific details through this table, including their names, descriptions, ACLs, and associated metadata. Utilize it to uncover information about namespaces, such as their access controls, configurations, and the metadata associated with each namespace.
 
+**Important Notes**
+- You need to specify the `namespace` and partition parameters in the `consul.spc` file to be able to query this table.
+
 ## Examples
 
 ### Basic info
