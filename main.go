@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/steampipe-plugin-consul/consul"
+	"github.com/turbot/steampipe-plugin-consul/consul"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 )
 

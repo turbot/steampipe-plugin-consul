@@ -1,4 +1,4 @@
-module github.com/steampipe-plugin-consul
+module github.com/turbot/steampipe-plugin-consul
 
 go 1.21
 
