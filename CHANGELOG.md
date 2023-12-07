@@ -1,3 +1,9 @@
+## v0.1.2 [2023-12-07]
+
+_Bug fixes_
+
+- Fixed the invalid Go module path of the plugin. ([#15](https://github.com/turbot/steampipe-plugin-consul/pull/15))
+
 ## v0.1.1 [2023-10-05]
 
 _Dependencies_
