@@ -19,7 +19,21 @@ The `consul_acl_token` table provides insights into ACL Tokens within HashiCorp 
 ### Basic info
 Explore which accessors have been authorized, when they were created, and their expiration timeline. This can help you manage access control and understand potential security risks in your system.
 
-```sql
+```sql+postgres
+select
+  accessor_id,
+  secret_id,
+  auth_method,
+  local,
+  create_time,
+  expiration_ttl,
+  namespace,
+  partition
+from
+  consul_acl_token;
+```
+
+```sql+sqlite
 select
   accessor_id,
   secret_id,
@@ -36,7 +50,7 @@ from
 ### List local tokens
 Explore which access control list (ACL) tokens are locally stored within the Consul service. This is useful for managing security and access controls, particularly in understanding which tokens might expire soon.
 
-```sql
+```sql+postgres
 select
   accessor_id,
   secret_id,
@@ -50,10 +64,38 @@ where
   local;
 ```
 
+```sql+sqlite
+select
+  accessor_id,
+  secret_id,
+  auth_method,
+  local,
+  create_time,
+  expiration_ttl
+from
+  consul_acl_token
+where
+  local = 1;
+```
+
 ### List tokens which will never expire
 Identify instances where certain access tokens are set to never expire. This can be useful in managing security and access control, as perpetual tokens may pose a potential risk.
 
-```sql
+```sql+postgres
+select
+  accessor_id,
+  secret_id,
+  auth_method,
+  local,
+  create_time,
+  expiration_ttl
+from
+  consul_acl_token
+where
+  expiration_time is null;
+```
+
+```sql+sqlite
 select
   accessor_id,
   secret_id,
@@ -70,7 +112,21 @@ where
 ### List tokens which are not associated with any role
 Discover the segments that consist of tokens not linked to any role, which can be useful to identify potential security risks or unused resources. This information can aid in streamlining your system's security and efficiency.
 
-```sql
+```sql+postgres
+select
+  accessor_id,
+  secret_id,
+  auth_method,
+  local,
+  create_time,
+  expiration_ttl
+from
+  consul_acl_token
+where
+  roles is null;
+```
+
+```sql+sqlite
 select
   accessor_id,
   secret_id,
@@ -87,7 +143,21 @@ where
 ### List tokens which are not associated with any auth method
 Determine the areas in which tokens are not associated with any authentication methods. This can be beneficial in identifying potential security vulnerabilities or gaps in your system's access control.
 
-```sql
+```sql+postgres
+select
+  accessor_id,
+  secret_id,
+  auth_method,
+  local,
+  create_time,
+  expiration_ttl
+from
+  consul_acl_token
+where
+  auth_method = '';
+```
+
+```sql+sqlite
 select
   accessor_id,
   secret_id,

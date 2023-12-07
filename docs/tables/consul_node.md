@@ -16,7 +16,20 @@ The `consul_node` table provides insights into Nodes within HashiCorp's Consul s
 ### Basic info
 Explore which nodes are part of your Consul datacenter to understand their addresses and partition details. This can help manage your datacenter more effectively by allowing you to determine the areas in which changes have been made recently.
 
-```sql
+```sql+postgres
+select
+  id,
+  node,
+  address,
+  datacenter,
+  create_index,
+  modify_index,
+  partition
+from
+  consul_node;
+```
+
+```sql+sqlite
 select
   id,
   node,
@@ -32,7 +45,22 @@ from
 ### List nodes from a specific datacenter
 Analyze the settings to understand the distribution of nodes within a specific datacenter. This can help in managing and optimizing resources effectively across different datacenters.
 
-```sql
+```sql+postgres
+select
+  id,
+  node,
+  address,
+  datacenter,
+  create_index,
+  modify_index,
+  partition
+from
+  consul_node
+where
+  datacenter = 'dc1';
+```
+
+```sql+sqlite
 select
   id,
   node,
@@ -50,7 +78,7 @@ where
 ### List nodes with a specific tag
 Explore which nodes are associated with a specific deployment tag. This can be useful in managing and organizing your resources based on their deployment status.
 
-```sql
+```sql+postgres
 select
   id,
   node,
@@ -63,4 +91,19 @@ from
   consul_node
 where
   meta->> 'deployment' = '2';
+```
+
+```sql+sqlite
+select
+  id,
+  node,
+  address,
+  datacenter,
+  create_index,
+  modify_index,
+  partition
+from
+  consul_node
+where
+  json_extract(meta, '$.deployment') = '2';
 ```

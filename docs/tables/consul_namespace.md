@@ -19,7 +19,18 @@ The `consul_namespace` table provides insights into Consul Namespaces within Has
 ### Basic info
 Explore the namespaces within your Consul environment to understand their creation and modification indices, which can help in tracking changes and managing your resources effectively.
 
-```sql
+```sql+postgres
+select
+  name,
+  create_index,
+  description,
+  modify_index,
+  partition
+from
+  consul_namespace;
+```
+
+```sql+sqlite
 select
   name,
   create_index,
@@ -33,7 +44,20 @@ from
 ### List deleted namespaces
 Discover the segments that were previously created but have since been removed. This is beneficial in assessing the changes in your system's organization and structure over time.
 
-```sql
+```sql+postgres
+select
+  name,
+  create_index,
+  description,
+  modify_index,
+  partition
+from
+  consul_namespace
+where
+  deleted_at is not null;
+```
+
+```sql+sqlite
 select
   name,
   create_index,
@@ -49,13 +73,24 @@ where
 ### Show ACLs of each namespace
 Assess the access control lists (ACLs) for each namespace to understand their policy and role defaults, which can be useful for auditing security configurations and permissions.
 
-```sql
+```sql+postgres
 select
   name,
   create_index,
   partition,
   jsonb_pretty(acls -> 'PolicyDefaults') as policy_defaults,
   jsonb_pretty(acls -> 'RoleDefaults') as role_defaults
+from
+  consul_namespace;
+```
+
+```sql+sqlite
+select
+  name,
+  create_index,
+  partition,
+  acls as policy_defaults,
+  acls as role_defaults
 from
   consul_namespace;
 ```

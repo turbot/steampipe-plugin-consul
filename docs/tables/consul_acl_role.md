@@ -19,7 +19,20 @@ The `consul_acl_role` table provides insights into ACL Roles within OCI Consul. 
 ### Basic info
 Explore the roles within your Consul ACL system to gain insights into their creation and modification indices, as well as their associated namespaces and partitions. This is useful for understanding the structure and organization of your access control system.
 
-```sql
+```sql+postgres
+select
+  id,
+  name,
+  description,
+  create_index,
+  modify_index,
+  namespace,
+  partition
+from
+  consul_acl_role;
+```
+
+```sql+sqlite
 select
   id,
   name,
@@ -35,7 +48,22 @@ from
 ### List roles which are not attached to any service identities
 Discover the roles that are not linked to any service identities. This can help in identifying unused roles and aid in system optimization by removing unnecessary elements.
 
-```sql
+```sql+postgres
+select
+  id,
+  name,
+  description,
+  create_index,
+  modify_index,
+  namespace,
+  partition
+from
+  consul_acl_role
+where
+  service_identities is null;
+```
+
+```sql+sqlite
 select
   id,
   name,
@@ -53,7 +81,7 @@ where
 ### Show ACL policies attached to a particular ACL role
 Determine the access control list (ACL) policies linked to a specific ACL role. This can be helpful in managing and understanding the permissions associated with different roles within your system.
 
-```sql
+```sql+postgres
 select
   id,
   name,
@@ -76,10 +104,33 @@ where
   );
 ```
 
+```sql+sqlite
+select
+  id,
+  name,
+  rules,
+  description,
+  create_index,
+  modify_index
+from
+  consul_acl_policy
+where
+  id in
+  (
+    select
+      json_extract(p.value, '$.ID')
+    from
+      consul_acl_role,
+      json_each(policies) as p
+    where
+      name = 'aclRole'
+  );
+```
+
 ### List roles which are attached to ACL tokens
 Discover the segments that have roles attached to ACL tokens to understand the user permissions and security settings in your system. This can help in managing access control and identifying potential security risks.
 
-```sql
+```sql+postgres
 select
   id,
   name,
@@ -96,5 +147,25 @@ where
     from
       consul_acl_token,
       jsonb_array_elements(roles) as r
+  );
+```
+
+```sql+sqlite
+select
+  id,
+  name,
+  description,
+  create_index,
+  modify_index
+from
+  consul_acl_role
+where
+  id in
+  (
+    select
+      json_extract(r.value, '$.ID')
+    from
+      consul_acl_token,
+      json_each(roles) as r
   );
 ```

@@ -16,7 +16,20 @@ The `consul_service` table provides insights into Consul Services within Oracle 
 ### Basic info
 Explore the various services within your network infrastructure to identify their associated data centers and namespaces. This can help you better understand the overall structure and organization of your services, which is useful in managing and optimizing your network resources.
 
-```sql
+```sql+postgres
+select
+  id,
+  node,
+  address,
+  datacenter,
+  service_id,
+  service_name,
+  namespace
+from
+  consul_service;
+```
+
+```sql+sqlite
 select
   id,
   node,
@@ -32,7 +45,22 @@ from
 ### List services present in default namespace
 Explore which services are present in the default namespace. This can help in understanding the configuration and organization of your services, and identify any areas for optimization or restructuring.
 
-```sql
+```sql+postgres
+select
+  id,
+  node,
+  address,
+  datacenter,
+  service_id,
+  service_name,
+  namespace
+from
+  consul_service
+where
+  namespace = 'default';
+```
+
+```sql+sqlite
 select
   id,
   node,
@@ -50,7 +78,22 @@ where
 ### List services which are not associated with any health checks
 Uncover the details of services that are not linked with any health checks. This can be useful for identifying potential vulnerabilities in your system, as these services may not be monitored for issues or failures.
 
-```sql
+```sql+postgres
+select
+  id,
+  node,
+  address,
+  datacenter,
+  service_id,
+  service_name,
+  namespace
+from
+  consul_service
+where
+  checks is null;
+```
+
+```sql+sqlite
 select
   id,
   node,
@@ -68,7 +111,22 @@ where
 ### List services with a specific tag
 Explore which services are associated with a specific tag to better manage and organize your resources. This can be particularly useful for identifying patterns or issues related to a specific service category.
 
-```sql
+```sql+postgres
+select
+  id,
+  node,
+  address,
+  datacenter,
+  service_id,
+  service_name,
+  namespace
+from
+  consul_service
+where
+  service_tag = 'http';
+```
+
+```sql+sqlite
 select
   id,
   node,
@@ -86,7 +144,22 @@ where
 ### List services running in a specific node
 Explore which services are actively running within a specific node for effective management and monitoring. This is particularly useful for identifying any potential issues or inconsistencies within your network infrastructure.
 
-```sql
+```sql+postgres
+select
+  id,
+  node,
+  address,
+  datacenter,
+  service_id,
+  service_name,
+  namespace
+from
+  consul_service
+where
+  node = 'ip-172-25-34-191';
+```
+
+```sql+sqlite
 select
   id,
   node,
@@ -104,7 +177,7 @@ where
 ### List services where service tags can be overridden
 Explore which services allow for tag overrides, useful for identifying areas where service tagging behavior can be customized to suit specific requirements. This can be beneficial in managing and organizing your services more effectively.
 
-```sql
+```sql+postgres
 select
   id,
   node,
@@ -117,4 +190,19 @@ from
   consul_service
 where
   service_enable_tag_override;
+```
+
+```sql+sqlite
+select
+  id,
+  node,
+  address,
+  datacenter,
+  service_id,
+  service_name,
+  namespace
+from
+  consul_service
+where
+  service_enable_tag_override = 1;
 ```

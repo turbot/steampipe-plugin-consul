@@ -19,7 +19,19 @@ The `consul_acl_auth_method` table provides insights into the ACL Auth Methods w
 ### Basic info
 Explore the authorization methods used within your Consul ACL system. This helps to assess the security settings and identify any modifications or partitions, enhancing overall system management and integrity.
 
-```sql
+```sql+postgres
+select
+  name,
+  type,
+  namespace,
+  create_index,
+  modify_index,
+  partition
+from
+  consul_acl_auth_method;
+```
+
+```sql+sqlite
 select
   name,
   type,
@@ -34,7 +46,21 @@ from
 ### List auth methods present in default namespace
 Explore the authentication methods currently active within the default namespace. This information can be useful for assessing security configuration and identifying potential vulnerabilities.
 
-```sql
+```sql+postgres
+select
+  name,
+  type,
+  namespace,
+  create_index,
+  modify_index,
+  partition
+from
+  consul_acl_auth_method
+where
+  namespace = 'default';
+```
+
+```sql+sqlite
 select
   name,
   type,
@@ -51,7 +77,21 @@ where
 ### List auth methods with global token locality
 Discover the authentication methods that have a global scope. This can be useful for understanding the distribution and reach of different authorization methods across your network.
 
-```sql
+```sql+postgres
+select
+  name,
+  type,
+  namespace,
+  create_index,
+  modify_index,
+  partition
+from
+  consul_acl_auth_method
+where
+  token_locality = 'global';
+```
+
+```sql+sqlite
 select
   name,
   type,
@@ -68,12 +108,22 @@ where
 ### Get config details of auth methods
 Assess the configuration details of authentication methods to gain insights into their settings, which can help in managing and enhancing security protocols.
 
-```sql
+```sql+postgres
 select
   name,
   namespace,
   partition,
   jsonb_pretty(config) as config
+from
+  consul_acl_auth_method;
+```
+
+```sql+sqlite
+select
+  name,
+  namespace,
+  partition,
+  config
 from
   consul_acl_auth_method;
 ```

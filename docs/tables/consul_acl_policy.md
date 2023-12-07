@@ -19,7 +19,21 @@ The `consul_acl_policy` table provides insights into ACL Policies within HashiCo
 ### Basic info
 Explore the specific policies within your ACL system to understand their rules, descriptions, and indices. This can help in managing access control and ensuring security within your system.
 
-```sql
+```sql+postgres
+select
+  id,
+  name,
+  rules,
+  description,
+  create_index,
+  modify_index,
+  namespace,
+  partition
+from
+  consul_acl_policy;
+```
+
+```sql+sqlite
 select
   id,
   name,
@@ -36,7 +50,23 @@ from
 ### List policies that are present in default namespace
 Explore which policies are present in the default namespace, allowing you to assess the elements within your system's default settings. This can help you maintain better control over your system's security and access rules.
 
-```sql
+```sql+postgres
+select
+  id,
+  name,
+  rules,
+  description,
+  create_index,
+  modify_index,
+  namespace,
+  partition
+from
+  consul_acl_policy
+where
+  namespace = 'default';
+```
+
+```sql+sqlite
 select
   id,
   name,
@@ -55,7 +85,7 @@ where
 ### List policies which are attached to ACL tokens
 Discover the segments that consist of policies linked to ACL tokens. This is useful for understanding the security measures in place and managing access control within your system.
 
-```sql
+```sql+postgres
 select
   id,
   name,
@@ -73,5 +103,26 @@ where
     from
       consul_acl_token,
       jsonb_array_elements(policies) as p
+  );
+```
+
+```sql+sqlite
+select
+  id,
+  name,
+  rules,
+  description,
+  create_index,
+  modify_index
+from
+  consul_acl_policy
+where
+  id in
+  (
+    select
+      json_extract(p.value, '$.ID')
+    from
+      consul_acl_token,
+      json_each(policies) as p
   );
 ```

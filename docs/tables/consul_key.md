@@ -16,7 +16,19 @@ The `consul_key` table provides insights into the keys and their corresponding v
 ### Basic info
 Explore which sessions are associated with a specific key in your system. This can help you understand and manage the distribution and assignment of resources within your network.
 
-```sql
+```sql+postgres
+select
+  key,
+  session,
+  create_index,
+  lock_index,
+  namespace,
+  partition
+from
+  consul_key;
+```
+
+```sql+sqlite
 select
   key,
   session,
@@ -31,7 +43,21 @@ from
 ### List keys present in default namespace
 Explore the keys present within the default namespace to understand their session contexts, creation indices, lock indices, and partitions. This can be beneficial in assessing the elements within the default namespace and understanding their configuration.
 
-```sql
+```sql+postgres
+select
+  key,
+  session,
+  create_index,
+  lock_index,
+  namespace,
+  partition
+from
+  consul_key
+where
+  namespace = 'default';
+```
+
+```sql+sqlite
 select
   key,
   session,
@@ -48,12 +74,22 @@ where
 ### Show key value details
 Explore which key-value pairs are being used in your Consul sessions. This can help you understand the configuration and data distribution within your system, allowing for more efficient management and troubleshooting.
 
-```sql
+```sql+postgres
 select
   key,
   session,
   namespace,
   jsonb_pretty(value) as value
+from
+  consul_key;
+```
+
+```sql+sqlite
+select
+  key,
+  session,
+  namespace,
+  value
 from
   consul_key;
 ```
