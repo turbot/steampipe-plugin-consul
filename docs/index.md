@@ -8,6 +8,7 @@ short_name: "consul"
 description: "Steampipe plugin to query nodes, ACLs, services and more from Consul."
 og_description: "Query Consul with SQL! Open source CLI. No DB required."
 og_image: "/images/plugins/turbot/consul-social-graphic.png"
+engines: ["steampipe", "sqlite", "postgres", "export"]
 ---
 
 # Consul + Steampipe
