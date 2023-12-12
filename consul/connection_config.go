@@ -7,29 +7,13 @@ import (
 
 	"github.com/hashicorp/consul/api"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/schema"
 )
 
 type consulConfig struct {
-	Address   *string `cty:"address"`
-	Namespace *string `cty:"namespace"`
-	Partition *string `cty:"partition"`
-	Token     *string `cty:"token"`
-}
-
-var ConfigSchema = map[string]*schema.Attribute{
-	"address": {
-		Type: schema.TypeString,
-	},
-	"namespace": {
-		Type: schema.TypeString,
-	},
-	"partition": {
-		Type: schema.TypeString,
-	},
-	"token": {
-		Type: schema.TypeString,
-	},
+	Address   *string `hcl:"address"`
+	Namespace *string `hcl:"namespace"`
+	Partition *string `hcl:"partition"`
+	Token     *string `hcl:"token"`
 }
 
 func ConfigInstance() interface{} {
