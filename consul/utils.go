@@ -49,5 +49,5 @@ func getAddressUrlUncached(ctx context.Context, d *plugin.QueryData, h *plugin.H
 		d.ConnectionManager.Cache.Set(cacheKey, consultData)
 	}
 
-	return cacheKey, nil
+	return consultData, nil
 }
