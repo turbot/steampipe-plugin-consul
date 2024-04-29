@@ -57,7 +57,7 @@ steampipe plugin install consul
 
 | Item        | Description                                                                                                                                                                                           |
 | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Credentials | Consul requires an Address or Address and [Token](https://developer.hashicorp.com/consul/docs/security/acl/acl-tokens) for all requests.                                                              |
+| Credentials | Consul requires an Address or Address and [Token](https://developer.hashicorp.com/consul/docs/security/acl/tokens/create/create-a-service-token) for all requests.                                                              |
 | Permissions | The permission scope of tokens is set by the Admin at the creation time of the ACL tokens.                                                                                                            |
 | Radius      | Each connection represents a single Consul Installation.                                                                                                                                              |
 | Resolution  | 1. Credentials explicitly set in a steampipe config file (`~/.steampipe/config/consul.spc`)<br />2. Credentials specified in environment variables, e.g., `CONSUL_HTTP_ADDR` and `CONSUL_HTTP_TOKEN`. |
@@ -77,7 +77,7 @@ connection "consul" {
   # address = "http://52.14.112.248:8500"
 
   # An ACL token is required for ACL-enabled Consul servers. Optional.
-  # For more information on the ACL Token, please see https://developer.hashicorp.com/consul/docs/security/acl/acl-tokens.
+  # For more information on the ACL Token, please see https://developer.hashicorp.com/consul/docs/security/acl/tokens/create/create-a-service-token.
   # This can also be set via the CONSUL_HTTP_TOKEN environment variable.
   # token = "c178b810-8b18-6f38-016f-725ddec5d58"
 
