@@ -31,7 +31,7 @@ func tableConsulACLToken(ctx context.Context) *plugin.Table {
 			KeyColumns: plugin.SingleColumn("accessor_id"),
 			Hydrate:    getACLToken,
 		},
-		Columns: []*plugin.Column{
+		Columns: commonColumns([]*plugin.Column{
 			{
 				Name:        "accessor_id",
 				Type:        proto.ColumnType_STRING,
@@ -134,7 +134,7 @@ func tableConsulACLToken(ctx context.Context) *plugin.Table {
 				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("AccessorID"),
 			},
-		},
+		}),
 	}
 }
 
