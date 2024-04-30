@@ -12,6 +12,7 @@ func commonColumns(c []*plugin.Column) []*plugin.Column {
 		{
 			Name:        "address_url",
 			Description: "The address URL.",
+			Type:        proto.ColumnType_STRING,
 			Hydrate:     getAddressUrl,
 		},
 	}, c...)
