@@ -27,7 +27,7 @@ func tableConsulService(ctx context.Context) *plugin.Table {
 				},
 			},
 		},
-		Columns: []*plugin.Column{
+		Columns: commonColumns([]*plugin.Column{
 			{
 				Name:        "id",
 				Type:        proto.ColumnType_STRING,
@@ -144,7 +144,7 @@ func tableConsulService(ctx context.Context) *plugin.Table {
 				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("ServiceName"),
 			},
-		},
+		}),
 	}
 }
 

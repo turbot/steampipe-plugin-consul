@@ -27,7 +27,7 @@ func tableConsulNode(ctx context.Context) *plugin.Table {
 			KeyColumns: plugin.SingleColumn("node"),
 			Hydrate:    getNode,
 		},
-		Columns: []*plugin.Column{
+		Columns: commonColumns([]*plugin.Column{
 			{
 				Name:        "id",
 				Type:        proto.ColumnType_STRING,
@@ -87,7 +87,7 @@ func tableConsulNode(ctx context.Context) *plugin.Table {
 				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("Node"),
 			},
-		},
+		}),
 	}
 }
 

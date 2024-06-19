@@ -26,7 +26,7 @@ func tableConsulACLAuthMethod(ctx context.Context) *plugin.Table {
 			KeyColumns: plugin.SingleColumn("name"),
 			Hydrate:    getACLAuthMethod,
 		},
-		Columns: []*plugin.Column{
+		Columns: commonColumns([]*plugin.Column{
 			{
 				Name:        "name",
 				Type:        proto.ColumnType_STRING,
@@ -98,7 +98,7 @@ func tableConsulACLAuthMethod(ctx context.Context) *plugin.Table {
 				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("Name"),
 			},
-		},
+		}),
 	}
 }
 

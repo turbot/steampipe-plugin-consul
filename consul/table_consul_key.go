@@ -31,7 +31,7 @@ func tableConsulKey(ctx context.Context) *plugin.Table {
 			KeyColumns: plugin.SingleColumn("key"),
 			Hydrate:    getKey,
 		},
-		Columns: []*plugin.Column{
+		Columns: commonColumns([]*plugin.Column{
 			{
 				Name:        "key",
 				Type:        proto.ColumnType_STRING,
@@ -85,7 +85,7 @@ func tableConsulKey(ctx context.Context) *plugin.Table {
 				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("Key"),
 			},
-		},
+		}),
 	}
 }
 

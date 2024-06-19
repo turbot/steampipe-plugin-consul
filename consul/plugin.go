@@ -15,7 +15,14 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			ShouldIgnoreErrorFunc: shouldIgnoreErrors([]string{"404"}),
 		},
 		DefaultRetryConfig: &plugin.RetryConfig{
-			ShouldRetryErrorFunc: shouldRetryError([]string{"429"})},
+			ShouldRetryErrorFunc: shouldRetryError([]string{"429"}),
+		},
+		ConnectionKeyColumns: []plugin.ConnectionKeyColumn{
+			{
+				Name:    "project",
+				Hydrate: getAddressUrl,
+			},
+		},
 		ConnectionConfigSchema: &plugin.ConnectionConfigSchema{
 			NewInstance: ConfigInstance,
 		},
