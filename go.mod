@@ -1,12 +1,12 @@
 module github.com/turbot/steampipe-plugin-consul
 
-go 1.21.0
+go 1.22.4
 
-toolchain go1.21.1
+toolchain go1.22.6
 
 require github.com/hashicorp/consul/api v1.20.0
 
-require github.com/turbot/steampipe-plugin-sdk/v5 v5.10.1
+require github.com/turbot/steampipe-plugin-sdk/v5 v5.10.3
 
 require (
 	cloud.google.com/go v0.112.0 // indirect
