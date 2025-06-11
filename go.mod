@@ -6,7 +6,7 @@ toolchain go1.23.2
 
 require github.com/hashicorp/consul/api v1.20.0
 
-require github.com/turbot/steampipe-plugin-sdk/v5 v5.11.6
+require github.com/turbot/steampipe-plugin-sdk/v5 v5.11.7
 
 require (
 	cloud.google.com/go v0.112.1 // indirect
