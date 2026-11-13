@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/hashicorp/consul/api"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin"
 )
 
 type consulConfig struct {
@@ -21,17 +21,17 @@ func ConfigInstance() interface{} {
 }
 
 func GetConfig(connection *plugin.Connection) consulConfig {
-	if connection == nil || connection.Config == nil {
+	if connection == nil || connection.GetConfig() == nil {
 		return consulConfig{}
 	}
-	config, _ := connection.Config.(consulConfig)
+	config, _ := connection.GetConfig().(consulConfig)
 	return config
 }
 
-func getClient(_ context.Context, d *plugin.QueryData) (*api.Client, error) {
+func getClient(ctx context.Context, d *plugin.QueryData) (*api.Client, error) {
 	// Load connection from cache
 	cacheKey := "consul"
-	if cachedData, ok := d.ConnectionManager.Cache.Get(cacheKey); ok {
+	if cachedData, ok := d.ConnectionCache.Get(ctx, cacheKey); ok {
 		return cachedData.(*api.Client), nil
 	}
 
@@ -64,9 +64,9 @@ func getClient(_ context.Context, d *plugin.QueryData) (*api.Client, error) {
 		client, _ := api.NewClient(con)
 
 		// Save to cache
-		d.ConnectionManager.Cache.Set(cacheKey, client)
+		_ = d.ConnectionCache.Set(ctx, cacheKey, client)
 		return client, nil
 	}
 
-	return nil, errors.New("'address' or ('address' and 'token') must be set in the connection configuration. Edit your connection configuration file and then restart Steampipe.")
+	return nil, errors.New("'address' or ('address' and 'token') must be set in the connection configuration. Edit your connection configuration file and then restart Steampipe")
 }
